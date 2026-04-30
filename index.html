@@ -645,7 +645,7 @@ table.rekap-table { width: 100%; border-collapse: collapse; font-size: 12px; min
       </div>
     </div>
 
-    <!-- ===== UPLOAD EXCEL PAGE ===== */
+    <!-- ===== UPLOAD EXCEL PAGE ===== -->
     <div class="page" id="page-upload">
       <div class="section-header">
         <span class="section-title">Upload Data Guru via Excel</span>
@@ -829,6 +829,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setDbStatus(false, 'Belum dikonfigurasi');
   }
 });
+
+document.addEventListener('dragover', event => event.preventDefault());
+document.addEventListener('drop', event => event.preventDefault());
 
 function toLocalDateStr(d) {
   const y = d.getFullYear(), m = String(d.getMonth()+1).padStart(2,'0'), dd = String(d.getDate()).padStart(2,'0');
@@ -1388,12 +1391,20 @@ function processExcelFile(file) {
   const reader = new FileReader();
   reader.onload = (e) => {
     const wb = XLSX.read(e.target.result, { type: 'array' });
+    if (!wb.SheetNames || !wb.SheetNames.length) {
+      showToast('Tidak ada sheet di file Excel!', true);
+      return;
+    }
+
     const ws = wb.Sheets[wb.SheetNames[0]];
     const raw = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-    if (raw.length < 2) { showToast('File kosong atau tidak valid!', true); return; }
+    if (!raw || raw.length < 2 || !raw[0].length) {
+      showToast('File kosong atau tidak valid!', true);
+      return;
+    }
 
     // Auto-detect headers (case-insensitive)
-    const headerRow = raw[0].map(h => String(h).trim().toUpperCase());
+    const headerRow = raw[0].map(h => String(h || '').trim().toUpperCase());
     const colMap = {};
     headerRow.forEach((h, i) => {
       if (h.includes('ID') && h.includes('PPS')) colMap.id_pps = i;
@@ -1403,19 +1414,30 @@ function processExcelFile(file) {
     });
 
     if (colMap.id_pps === undefined || colMap.nama === undefined) {
-      showToast('Kolom "ID PPS" dan "NAMA" tidak ditemukan!', true); return;
+      showToast('Kolom "ID PPS" dan "NAMA" tidak ditemukan!', true);
+      return;
     }
 
-    uploadedRows = raw.slice(1).map(row => ({
-      id_pps: String(row[colMap.id_pps] ?? '').trim(),
-      nama: String(row[colMap.nama] ?? '').trim(),
-      dom: String(row[colMap.dom] ?? '').trim(),
-      tingkatan: String(row[colMap.tingkatan] ?? '').trim(),
-    })).filter(r => r.id_pps && r.nama);
+    const rowMap = new Map();
+    let duplicates = 0;
+    raw.slice(1).forEach((row, index) => {
+      const idPps = String(row[colMap.id_pps] ?? '').trim();
+      const nama = String(row[colMap.nama] ?? '').trim();
+      const dom = String(row[colMap.dom] ?? '').trim();
+      const tingkatan = String(row[colMap.tingkatan] ?? '').trim();
+      if (!idPps || !nama) return;
+      if (rowMap.has(idPps)) duplicates += 1;
+      rowMap.set(idPps, { id_pps: idPps, nama, dom, tingkatan });
+    });
 
-    if (!uploadedRows.length) { showToast('Tidak ada baris valid!', true); return; }
+    uploadedRows = Array.from(rowMap.values());
+    if (!uploadedRows.length) {
+      showToast('Tidak ada baris valid!', true);
+      return;
+    }
 
-    document.getElementById('previewCount').textContent = uploadedRows.length + ' baris';
+    const duplicateMsg = duplicates > 0 ? ` (${duplicates} duplikat ID PPS diabaikan)` : '';
+    document.getElementById('previewCount').textContent = uploadedRows.length + ' baris' + duplicateMsg;
     document.getElementById('previewBody').innerHTML = uploadedRows.slice(0, 50).map((r, i) => `<tr>
       <td style="font-size:11px;color:var(--text-light);">${i+1}</td>
       <td style="font-family:monospace;font-size:12px;">${r.id_pps}</td>
@@ -1428,6 +1450,9 @@ function processExcelFile(file) {
     document.getElementById('previewSection').style.display = 'block';
     document.getElementById('uploadZone').style.display = 'none';
   };
+  reader.onerror = () => {
+    showToast('Gagal membaca file Excel!', true);
+  };
   reader.readAsArrayBuffer(file);
 }
 
@@ -1439,11 +1464,12 @@ async function uploadToSupabase() {
   btn.innerHTML = '<span class="loader"></span> Mengupload...';
   btn.disabled = true;
 
-  // Upsert in chunks
+  // Pastikan tidak ada duplikat ID PPS di upload batch
+  const uniqueRows = Array.from(new Map(uploadedRows.map(r => [r.id_pps, r])).values());
   const CHUNK = 50;
   let total = 0;
-  for (let i = 0; i < uploadedRows.length; i += CHUNK) {
-    const chunk = uploadedRows.slice(i, i+CHUNK);
+  for (let i = 0; i < uniqueRows.length; i += CHUNK) {
+    const chunk = uniqueRows.slice(i, i+CHUNK);
     const { error } = await supabaseClient.from('guru').upsert(chunk, { onConflict: 'id_pps' });
     if (error) {
       btn.innerHTML = '☁️ Upload ke Supabase';
