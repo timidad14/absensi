@@ -457,20 +457,22 @@ function go(nama, btn){
 
 // ===== SUPABASE =====
 async function connect(silent=false){
-  const url=SB_URL, key=SB_KEY;
   try {
-    const {createClient}=supabase; sb=createClient(url,key);
-    const {error}=await sb.from('guru').select('count',{count:'exact',head:true});
+    const {createClient}=supabase;
+    sb=createClient(SB_URL, SB_KEY);
+    // Gunakan select biasa, bukan head:true yang kadang error
+    const {data, error}=await sb.from('guru').select('id_pps').limit(1);
     if(error) throw error;
     document.getElementById('st-badge').className='st-badge ok';
     document.getElementById('st-txt').textContent='Terhubung';
-    document.getElementById('cfg-card').style.display='none';
     if(!silent) toast('✅ Berhasil terhubung!','suc');
     await loadGuru(); loadDashboard(); updateSideStats();
   } catch(e){
+    sb=null;
     document.getElementById('st-badge').className='st-badge no';
-    document.getElementById('st-txt').textContent='Gagal';
-    toast('❌ '+e.message,'err');
+    document.getElementById('st-txt').textContent='Gagal: '+e.message;
+    if(!silent) toast('❌ '+e.message,'err');
+    console.error('Supabase connect error:', e);
   }
 }
 
