@@ -84,7 +84,7 @@ body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); colo
   width: 36px; height: 36px; border-radius: 50%; background: var(--green-400);
   color: white; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600;
 }
-.content { padding: 32px; flex: 1; }
+.content { padding: 32px; flex: 1; overflow-y: auto; height: calc(100vh - 64px); }
 .page { display: none; }
 .page.active { display: block; }
 
@@ -690,13 +690,21 @@ table.rekap-table { width: 100%; border-collapse: collapse; font-size: 12px; min
         </div>
       </div>
 
-      <!-- SQL SETUP GUIDE -->
+      <!-- SQL SETUP GUIDE (collapsible) -->
       <div class="card" style="margin-top:28px;">
-        <div class="card-header">
-          <div class="card-title">🗄️ Panduan Setup Supabase (jalankan sekali di SQL Editor)</div>
+        <div class="card-header" onclick="toggleSqlGuide()" style="cursor:pointer;user-select:none;">
+          <div>
+            <div class="card-title">🗄️ Panduan Setup Supabase</div>
+            <div class="card-sub">Klik untuk lihat SQL — jalankan sekali di SQL Editor Supabase</div>
+          </div>
+          <span id="sqlToggleIcon" style="font-size:20px;color:var(--text-light);transition:transform 0.2s;">▶</span>
         </div>
-        <div class="card-body">
-          <pre style="background:#1C1C1C;color:#3ECF8E;padding:20px;border-radius:var(--radius-sm);font-size:12px;overflow-x:auto;line-height:1.8;">-- 1. Tabel data guru
+        <div id="sqlGuideBody" style="display:none;">
+          <div class="card-body">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:8px;">
+              <button class="btn btn-sm btn-outline" onclick="copySql(event)">📋 Copy SQL</button>
+            </div>
+            <pre id="sqlCode" style="background:#1C1C1C;color:#3ECF8E;padding:20px;border-radius:var(--radius-sm);font-size:12px;overflow-x:auto;line-height:1.8;">-- 1. Tabel data guru
 CREATE TABLE IF NOT EXISTS guru (
   id          BIGSERIAL PRIMARY KEY,
   id_pps      TEXT UNIQUE NOT NULL,
@@ -721,13 +729,14 @@ CREATE TABLE IF NOT EXISTS absensi (
 CREATE INDEX IF NOT EXISTS idx_absensi_tanggal ON absensi(tanggal);
 CREATE INDEX IF NOT EXISTS idx_absensi_idpps   ON absensi(id_pps);
 
--- 4. Aktifkan RLS (opsional, sesuaikan policy)
--- ALTER TABLE guru ENABLE ROW LEVEL SECURITY;
--- ALTER TABLE absensi ENABLE ROW LEVEL SECURITY;
--- CREATE POLICY "public read" ON guru FOR SELECT USING (true);
--- CREATE POLICY "public write" ON guru FOR ALL USING (true);
--- CREATE POLICY "public read" ON absensi FOR SELECT USING (true);
--- CREATE POLICY "public write" ON absensi FOR ALL USING (true);</pre>
+-- 4. Aktifkan RLS — WAJIB agar bisa diakses dari browser!
+ALTER TABLE guru ENABLE ROW LEVEL SECURITY;
+ALTER TABLE absensi ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "public read guru"    ON guru    FOR SELECT USING (true);
+CREATE POLICY "public write guru"   ON guru    FOR ALL    USING (true);
+CREATE POLICY "public read absensi" ON absensi FOR SELECT USING (true);
+CREATE POLICY "public write absensi" ON absensi FOR ALL   USING (true);</pre>
+          </div>
         </div>
       </div>
     </div>
@@ -875,9 +884,32 @@ function showPage(name, el) {
   if (el) el.classList.add('active');
   const titles = { dashboard: 'Dashboard Absensi Guru', absensi: 'Input Absensi Harian', rekap: 'Rekap Bulanan Hijriah', guru: 'Data Guru', upload: 'Upload Data Excel' };
   document.getElementById('topbarTitle').textContent = titles[name] || name;
+  // Scroll ke atas setiap ganti halaman
+  document.querySelector('.content').scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({ top: 0, behavior: 'smooth' });
   if (name === 'rekap') loadRekap();
   if (name === 'guru') loadGuru();
   if (name === 'dashboard') loadDashboard();
+  // Reset SQL guide ke tertutup saat buka halaman upload
+  if (name === 'upload') {
+    document.getElementById('sqlGuideBody').style.display = 'none';
+    document.getElementById('sqlToggleIcon').style.transform = 'rotate(0deg)';
+    document.getElementById('sqlToggleIcon').textContent = '▶';
+  }
+}
+
+function toggleSqlGuide() {
+  const body = document.getElementById('sqlGuideBody');
+  const icon = document.getElementById('sqlToggleIcon');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  icon.textContent = isOpen ? '▶' : '▼';
+}
+
+function copySql(e) {
+  e.stopPropagation();
+  const sql = document.getElementById('sqlCode').textContent;
+  navigator.clipboard.writeText(sql).then(() => showToast('✅ SQL berhasil dicopy!'));
 }
 
 // =============================================
