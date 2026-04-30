@@ -201,6 +201,44 @@ tr:hover td{background:#fdf8f0}
 .toast.err{border-left-color:var(--merah)}
 .toast.suc{border-left-color:#43a047}
 code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-family:monospace}
+
+/* SESI HIJRIAH */
+.sesi-box{background:var(--hijau-tua);border-radius:14px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.sesi-box.aktif{background:linear-gradient(135deg,#1a3a2a,#2d5a3d)}
+.sesi-info{flex:1}
+.sesi-label{color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.sesi-tgl{font-family:'Amiri',serif;color:var(--emas);font-size:22px;font-weight:700}
+.sesi-tgl-m{color:rgba(255,255,255,.4);font-size:11.5px;margin-top:2px}
+.sesi-status{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700}
+.sesi-status.buka{background:rgba(67,160,71,.25);color:#a5d6a7;border:1px solid rgba(67,160,71,.4)}
+.sesi-status.tutup{background:rgba(198,40,40,.2);color:#ef9a9a;border:1px solid rgba(198,40,40,.3)}
+.sesi-actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn-sesi{padding:9px 16px;border-radius:8px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-buka{background:var(--emas);color:var(--hijau-tua)}
+.btn-buka:hover{background:var(--emas-muda)}
+.btn-tutup-sesi{background:rgba(198,40,40,.25);color:#ef9a9a;border:1px solid rgba(198,40,40,.4)!important}
+.btn-tutup-sesi:hover{background:rgba(198,40,40,.4)}
+.input-hijri{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-family:'Amiri',serif;outline:none;width:52px;text-align:center}
+.input-hijri:focus{border-color:var(--emas)}
+.select-hijri{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer}
+.select-hijri option{background:#1a3a2a;color:#fff}
+.select-hijri:focus{border-color:var(--emas)}
+
+/* REKAP KALENDER */
+.rekap-wrap{overflow-x:auto}
+.tbl-rekap-kal{min-width:900px}
+.tbl-rekap-kal th{padding:7px 8px;font-size:10px;white-space:nowrap}
+.tbl-rekap-kal td{padding:7px 8px;font-size:12px;white-space:nowrap}
+.kal-cell{width:28px;height:24px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;cursor:default}
+.kal-cell.H{background:#e8f5e9;color:#2e7d32}
+.kal-cell.A{background:#fce4ec;color:#c62828}
+.kal-cell.I{background:#fff8e1;color:#f57f17}
+.kal-cell.S{background:#e3f2fd;color:#1565c0}
+.kal-cell.kosong{background:#f5f5f5;color:#ccc}
+.kal-head-tgl{font-size:9.5px;color:var(--abu);text-align:center;min-width:28px}
+.filter-hijri{display:flex;gap:9px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.filter-hijri select,.filter-hijri input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:12.5px;outline:none;font-family:inherit;background:#fff}
+
 </style>
 </head>
 <body>
@@ -257,6 +295,17 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 
     <!-- CHECK-IN -->
     <div class="page" id="page-checkin">
+      <!-- SESI BOX -->
+      <div class="sesi-box" id="sesi-box">
+        <div class="sesi-info">
+          <div class="sesi-label">Sesi Absensi Hari Ini</div>
+          <div class="sesi-tgl" id="sesi-tgl-hijri">Belum ada sesi aktif</div>
+          <div class="sesi-tgl-m" id="sesi-tgl-masehi">—</div>
+        </div>
+        <div class="sesi-actions" id="sesi-actions">
+          <!-- Isi via JS -->
+        </div>
+      </div>
       <div class="ci-wrap">
         <div class="ci-box">
           <span class="ci-ar">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span>
@@ -349,21 +398,26 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
           <div><div class="ct">📅 Rekap Bulanan</div><div class="cs">Rekapitulasi kehadiran per bulan</div></div>
         </div>
         <div style="padding:14px 18px">
-          <div class="filter-bar">
-            <select id="f-bulan">
-              <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
-              <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
-              <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
-              <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+          <div class="filter-hijri">
+            <select id="f-bulan-hijri">
+              <option value="1">Muharram</option><option value="2">Shafar</option>
+              <option value="3">Rabi'ul Awwal</option><option value="4">Rabi'ul Akhir</option>
+              <option value="5">Jumadal Ula</option><option value="6">Jumadal Akhirah</option>
+              <option value="7">Rajab</option><option value="8">Sya'ban</option>
+              <option value="9">Ramadhan</option><option value="10">Syawwal</option>
+              <option value="11">Dzulqa'dah</option><option value="12">Dzulhijjah</option>
             </select>
-            <input type="number" id="f-tahun" value="2026" min="2020" max="2035" style="width:85px">
+            <input type="number" id="f-tahun-hijri" value="1446" min="1440" max="1460" style="width:85px">
             <button class="btn btn-g" onclick="loadRekap()">🔍 Tampilkan</button>
           </div>
+          <div id="rekap-info" style="font-size:12px;color:var(--abu);margin-bottom:8px"></div>
         </div>
-        <table>
-          <thead><tr><th>#</th><th>Nama Guru</th><th>Dom</th><th>Hadir</th><th>Alpha</th><th>Izin</th><th>Sakit</th><th>Total Hari</th><th>% Hadir</th></tr></thead>
-          <tbody id="tb-rekap"><tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Pilih bulan lalu klik Tampilkan</p></div></td></tr></tbody>
-        </table>
+        <div class="rekap-wrap">
+          <table class="tbl-rekap-kal" id="tbl-rekap-kal">
+            <thead id="thead-rekap"></thead>
+            <tbody id="tb-rekap"><tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Pilih bulan Hijriah lalu klik Tampilkan</p></div></td></tr></tbody>
+          </table>
+        </div>
       </div>
     </div>
 
@@ -414,19 +468,148 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 const SB_URL = 'https://rttcqjfvpcpdxodfwzeo.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0dGNxamZ2cGNwZHhvZGZ3emVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTAwMjEsImV4cCI6MjA5MzA2NjAyMX0.F3CmOnIgbwRNaUIGs7zO2-HQ0Wln8xqgw0BnhcS3GM8';
 
+// ===== BULAN HIJRIAH =====
+const BLN_H = ['','Muharram','Shafar','Rabi'ul Awwal','Rabi'ul Akhir','Jumadal Ula','Jumadal Akhirah','Rajab','Sya'ban','Ramadhan','Syawwal','Dzulqa'dah','Dzulhijjah'];
+const BLN_M = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const HARI  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+
 // ===== STATE =====
 let sb = null, daftarGuru = [], prevData = [], logHariIni = [];
-let statusHariIni = {}; // { id_pps: 'H'|'A'|'I'|'S' } per hari
+let statusHariIni = {};
 let filterStatus = 'all', filterText = '';
-let perubahanAdmin = {}; // { id_pps: { status, keterangan } }
+let perubahanAdmin = {};
 
-const BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+// Sesi aktif: { tanggal_key, hijri_label, masehi_label }
+// tanggal_key = string "H-dd-mm-yyyy" unik per hari Hijriah
+// disimpan di localStorage agar bertahan refresh
+let sesiAktif = null;
 
-function fmtTgl(d){ return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]} ${d.getFullYear()}` }
+// ===== HIJRIAH UTILS =====
+// Konversi Gregorian → Hijriah (algoritma umm al-qura approx)
+function gregorianToHijri(year, month, day) {
+  // Pakai Intl API jika tersedia
+  try {
+    const d = new Date(year, month-1, day);
+    const hParts = new Intl.DateTimeFormat('id-u-ca-islamic-umalqura', {
+      day:'numeric', month:'numeric', year:'numeric'
+    }).formatToParts(d);
+    let hd=1,hm=1,hy=1446;
+    hParts.forEach(p=>{
+      if(p.type==='day') hd=parseInt(p.value);
+      if(p.type==='month') hm=parseInt(p.value);
+      if(p.type==='year') hy=parseInt(p.value);
+    });
+    return {day:hd, month:hm, year:hy};
+  } catch(e) {
+    return {day:1, month:1, year:1446};
+  }
+}
+
+function todayHijri() {
+  const now = new Date();
+  return gregorianToHijri(now.getFullYear(), now.getMonth()+1, now.getDate());
+}
+
+function hijriLabel(hd, hm, hy) {
+  return `${hd} ${BLN_H[hm]} ${hy}`;
+}
+
+function todayMasehi() {
+  const now = new Date();
+  return `${HARI[now.getDay()]}, ${now.getDate()} ${BLN_M[now.getMonth()]} ${now.getFullYear()}`;
+}
+
+function today() { return new Date().toISOString().split('T')[0]; }
+function fmtTgl(d){ return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN_M[d.getMonth()]} ${d.getFullYear()}` }
 function fmtJam(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) }
 function fmtWkt(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) }
-function today(){ return new Date().toISOString().split('T')[0] }
+
+// Buat tanggal key unik dari input hijriah + tanggal masehi hari ini
+// Format simpan: tanggal Masehi (YYYY-MM-DD) — satu sesi = satu hari Masehi
+function sesiKey() { return today(); }
+
+// ===== SESI ABSENSI =====
+function loadSesi() {
+  const saved = localStorage.getItem('sesi_absensi');
+  if (saved) {
+    try { sesiAktif = JSON.parse(saved); } catch(e) { sesiAktif = null; }
+  }
+  renderSesi();
+}
+
+function renderSesi() {
+  const box = document.getElementById('sesi-box');
+  const tglH = document.getElementById('sesi-tgl-hijri');
+  const tglM = document.getElementById('sesi-tgl-masehi');
+  const acts = document.getElementById('sesi-actions');
+
+  if (sesiAktif) {
+    box.className = 'sesi-box aktif';
+    tglH.textContent = sesiAktif.hijri_label;
+    tglM.textContent = sesiAktif.masehi_label;
+    acts.innerHTML = `
+      <div class="sesi-status buka">🟢 Sesi Aktif</div>
+      <button class="btn-sesi btn-tutup-sesi" onclick="tutupSesi()">🔒 Tutup Sesi</button>
+    `;
+    // Update topbar
+    document.getElementById('tgl-top').textContent = sesiAktif.hijri_label + ' | ' + sesiAktif.masehi_label.split(',')[1]?.trim();
+    document.getElementById('ci-tgl').textContent = sesiAktif.hijri_label + ' · ' + sesiAktif.masehi_label;
+  } else {
+    box.className = 'sesi-box';
+    tglH.textContent = 'Belum ada sesi aktif';
+    tglM.textContent = 'Buka sesi untuk mulai absensi hari ini';
+    acts.innerHTML = buildBukaSesiForm();
+    // Isi default dengan konversi otomatis hari ini
+    const hh = todayHijri();
+    setTimeout(()=>{
+      const ed=document.getElementById('inp-hd'), em=document.getElementById('inp-hm'), ey=document.getElementById('inp-hy');
+      if(ed) ed.value=hh.day;
+      if(em) em.value=hh.month;
+      if(ey) ey.value=hh.year;
+    }, 50);
+  }
+}
+
+function buildBukaSesiForm() {
+  const hh = todayHijri();
+  const blnOpts = BLN_H.slice(1).map((b,i)=>`<option value="${i+1}"${i+1===hh.month?' selected':''}>${b}</option>`).join('');
+  return `
+    <input type="number" class="input-hijri" id="inp-hd" value="${hh.day}" min="1" max="30" placeholder="Tgl">
+    <select class="select-hijri" id="inp-hm">${blnOpts}</select>
+    <input type="number" class="input-hijri" id="inp-hy" value="${hh.year}" min="1440" max="1460" style="width:65px" placeholder="Tahun">
+    <button class="btn-sesi btn-buka" onclick="bukaSesi()">🟢 Buka Sesi</button>
+  `;
+}
+
+function bukaSesi() {
+  const hd = parseInt(document.getElementById('inp-hd').value)||1;
+  const hm = parseInt(document.getElementById('inp-hm').value)||1;
+  const hy = parseInt(document.getElementById('inp-hy').value)||1446;
+  if(hd<1||hd>30||hm<1||hm>12||hy<1400){ toast('Tanggal Hijriah tidak valid!','err'); return; }
+
+  sesiAktif = {
+    tanggal_key: sesiKey(),        // YYYY-MM-DD masehi hari ini
+    hijri_label: hijriLabel(hd, hm, hy),
+    hijri_day: hd, hijri_month: hm, hijri_year: hy,
+    masehi_label: todayMasehi()
+  };
+  localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
+  renderSesi();
+  updateSideStats();
+  toast('✅ Sesi absensi ' + sesiAktif.hijri_label + ' dibuka!', 'suc');
+}
+
+function tutupSesi() {
+  if(!confirm('Tutup sesi absensi ' + sesiAktif?.hijri_label + '? Guru yang belum check-in bisa dicatat Alpha dulu di Koreksi Admin.')) return;
+  sesiAktif = null;
+  localStorage.removeItem('sesi_absensi');
+  renderSesi();
+  toast('🔒 Sesi ditutup.', '');
+}
+
+function getTanggalSesi() {
+  return sesiAktif ? sesiAktif.tanggal_key : today();
+}
 
 // ===== INIT =====
 document.addEventListener('DOMContentLoaded', ()=>{
@@ -434,10 +617,14 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('tgl-top').textContent = fmtTgl(now);
   document.getElementById('ci-tgl').textContent = fmtTgl(now);
   document.getElementById('tgl-admin').value = today();
-  document.getElementById('f-bulan').value = now.getMonth()+1;
-  document.getElementById('f-tahun').value = now.getFullYear();
-  setInterval(()=>{ document.getElementById('ci-jam').textContent = fmtJam(new Date()); }, 1000);
 
+  // Isi filter rekap dengan bulan Hijriah saat ini
+  const hh = todayHijri();
+  document.getElementById('f-bulan-hijri').value = hh.month;
+  document.getElementById('f-tahun-hijri').value = hh.year;
+
+  setInterval(()=>{ document.getElementById('ci-jam').textContent = fmtJam(new Date()); }, 1000);
+  loadSesi();
   connect(true);
 });
 
@@ -460,7 +647,6 @@ async function connect(silent=false){
   try {
     const {createClient}=supabase;
     sb=createClient(SB_URL, SB_KEY);
-    // Gunakan select biasa, bukan head:true yang kadang error
     const {data, error}=await sb.from('guru').select('id_pps').limit(1);
     if(error) throw error;
     document.getElementById('st-badge').className='st-badge ok';
@@ -489,23 +675,28 @@ async function doCheckin(){
   const inp=document.getElementById('ci-inp');
   const idpps=inp.value.trim(); if(!idpps) return;
   if(!sb){ showFb('err','Koneksi Error','Supabase belum terhubung','notfound'); inp.value=''; return; }
+  if(!sesiAktif){ showFb('err','⚠️ Sesi Belum Dibuka','Buka sesi absensi dulu di atas!','notfound'); inp.value=''; setTimeout(clearFb,3500); return; }
 
   const guru=daftarGuru.find(g=>String(g.id_pps)===idpps);
   if(!guru){
-    showFb('err','❌ ID Tidak Dikenali','ID "'+idpps+'" tidak ditemukan dalam data guru','notfound');
+    showFb('err','❌ ID Tidak Dikenali','ID "'+idpps+'" tidak ditemukan','notfound');
     inp.value=''; setTimeout(clearFb,3500); return;
   }
 
-  // Cek sudah absen hari ini?
-  const {data:exist}=await sb.from('absensi').select('id,status').eq('id_pps',idpps).eq('tanggal',today()).maybeSingle();
+  const tgl = getTanggalSesi();
+  const {data:exist}=await sb.from('absensi').select('id,status').eq('id_pps',idpps).eq('tanggal',tgl).maybeSingle();
   if(exist){
     const lbl={H:'Hadir',A:'Alpha',I:'Izin',S:'Sakit'};
     showFb('err',guru.nama,guru.dom+' · '+guru.tingkatan,'sudah');
-    document.getElementById('fb-dt').textContent = `Status hari ini: ${lbl[exist.status]||exist.status}`;
+    document.getElementById('fb-dt').textContent = `Status ${sesiAktif.hijri_label}: ${lbl[exist.status]||exist.status}`;
     inp.value=''; setTimeout(clearFb,3500); return;
   }
 
-  const {error}=await sb.from('absensi').insert({id_pps:idpps,tanggal:today(),status:'H',keterangan:'Check-in mandiri'});
+  const ket = 'Check-in mandiri · ' + sesiAktif.hijri_label;
+  const {error}=await sb.from('absensi').insert({
+    id_pps:idpps, tanggal:tgl, status:'H', keterangan:ket,
+    hijri_label: sesiAktif.hijri_label
+  });
   if(error){ showFb('err','❌ Gagal',error.message,'notfound'); }
   else {
     showFb('ok',guru.nama,guru.dom+' · '+guru.tingkatan,'hadir');
@@ -539,7 +730,7 @@ function renderLog(){
 
 async function updateSideStats(){
   if(!sb) return;
-  const tgl=today();
+  const tgl=getTanggalSesi();
   const {data:dH}=await sb.from('absensi').select('id').eq('tanggal',tgl).eq('status','H');
   const hadir=(dH||[]).length;
   const belum=daftarGuru.length-hadir;
@@ -567,33 +758,23 @@ document.addEventListener('change', e=>{
 function renderGuruList(){
   const el=document.getElementById('guru-list');
   if(!daftarGuru.length){ el.innerHTML='<div class="empty" style="padding:30px"><div class="ic">👥</div><p>Upload data guru dulu</p></div>'; return; }
-
   let list=daftarGuru.filter(g=>{
     const s=statusHariIni[g.id_pps]?.status||'none';
     const txtOk=!filterText||(g.nama.toLowerCase().includes(filterText)||String(g.id_pps).includes(filterText));
     const stOk=filterStatus==='all'||(filterStatus==='none'&&!statusHariIni[g.id_pps])||(filterStatus!=='none'&&s===filterStatus);
     return txtOk&&stOk;
   });
-
   if(!list.length){ el.innerHTML='<div class="empty" style="padding:30px"><div class="ic">🔍</div><p>Tidak ada guru yang sesuai filter</p></div>'; return; }
-
-  el.innerHTML=list.map((g,i)=>{
+  el.innerHTML=list.map(g=>{
     const cur=perubahanAdmin[g.id_pps]?.status||statusHariIni[g.id_pps]?.status||'';
     const sBtns=['H','A','I','S'].map(s=>`<button class="gs-btn${cur===s?' on-'+s:''}" onclick="setAdminStatus('${g.id_pps}','${s}',this)">${s==='H'?'✅':s==='A'?'❌':s==='I'?'📋':'🏥'} ${s}</button>`).join('');
-    return `<div class="guru-item">
-      <div class="gi-info">
-        <div class="gi-nm">${g.nama}</div>
-        <div class="gi-sub"><code>${g.id_pps}</code> · ${g.dom||'—'}</div>
-      </div>
-      <div class="gi-status">${sBtns}</div>
-    </div>`;
+    return `<div class="guru-item"><div class="gi-info"><div class="gi-nm">${g.nama}</div><div class="gi-sub"><code>${g.id_pps}</code> · ${g.dom||'—'}</div></div><div class="gi-status">${sBtns}</div></div>`;
   }).join('');
 }
 
 function setAdminStatus(idpps, status, btn){
   if(!perubahanAdmin[idpps]) perubahanAdmin[idpps]={};
   perubahanAdmin[idpps].status=status;
-  // Update button UI
   const row=btn.closest('.gi-status');
   row.querySelectorAll('.gs-btn').forEach(b=>b.className='gs-btn');
   btn.className='gs-btn on-'+status;
@@ -619,20 +800,15 @@ function filterGuru(){
   renderGuruList();
 }
 
-function filterByStatus(s){
-  filterStatus=s;
-  renderGuruList();
-}
+function filterByStatus(s){ filterStatus=s; renderGuruList(); }
 
 async function simpanKoreksi(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const tgl=document.getElementById('tgl-admin').value||today();
   const perubahan=Object.entries(perubahanAdmin);
   if(!perubahan.length){ toast('Tidak ada perubahan!','err'); return; }
-
   const btn=document.getElementById('btn-koreksi');
   btn.disabled=true; btn.innerHTML='<div class="loading"></div> Menyimpan...';
-
   const rows=perubahan.map(([idpps,val])=>({ id_pps:idpps, tanggal:tgl, status:val.status, keterangan:val.ket||'' }));
   try {
     const {error}=await sb.from('absensi').upsert(rows,{onConflict:'id_pps,tanggal'});
@@ -648,15 +824,10 @@ async function simpanKoreksi(){
 async function tutupAbsensi(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const tgl=document.getElementById('tgl-admin').value||today();
-
-  // Guru yang belum ada status → otomatis Alpha
   const sudahAbsen=Object.keys(statusHariIni);
   const belum=daftarGuru.filter(g=>!sudahAbsen.includes(String(g.id_pps)));
-
   if(!belum.length){ toast('Semua guru sudah punya status hari ini!','suc'); return; }
-
   if(!confirm(`${belum.length} guru belum absen akan otomatis dicatat Alpha. Lanjutkan?`)) return;
-
   const rows=belum.map(g=>({ id_pps:g.id_pps, tanggal:tgl, status:'A', keterangan:'Auto-Alpha (tidak check-in)' }));
   try {
     const {error}=await sb.from('absensi').upsert(rows,{onConflict:'id_pps,tanggal'});
@@ -670,16 +841,14 @@ async function tutupAbsensi(){
 // ===== DASHBOARD =====
 async function loadDashboard(){
   if(!sb) return;
-  const tgl=today(), now=new Date();
-  const bulan=now.getMonth()+1, tahun=now.getFullYear();
-
+  const tgl=getTanggalSesi()||today();
   const {data:dH}=await sb.from('absensi').select('status').eq('tanggal',tgl);
   document.getElementById('s-hadir').textContent=(dH||[]).filter(a=>a.status==='H').length;
   document.getElementById('s-alpha').textContent=(dH||[]).filter(a=>a.status==='A').length;
 
-  const start=`${tahun}-${String(bulan).padStart(2,'0')}-01`;
-  const end=`${tahun}-${String(bulan).padStart(2,'0')}-31`;
-  const {data:dB}=await sb.from('absensi').select('status').gte('tanggal',start).lte('tanggal',end);
+  // Persentase: ambil semua data 30 hari terakhir
+  const d30 = new Date(); d30.setDate(d30.getDate()-30);
+  const {data:dB}=await sb.from('absensi').select('status').gte('tanggal',d30.toISOString().split('T')[0]);
   const tot=(dB||[]).length, hadirB=(dB||[]).filter(a=>a.status==='H').length;
   document.getElementById('s-persen').textContent=tot>0?Math.round(hadirB/tot*100)+'%':'—';
 
@@ -690,38 +859,105 @@ async function loadDashboard(){
   tb.innerHTML=tk.map(a=>`<tr>
     <td style="font-weight:600">${a.guru?.nama||a.id_pps}</td>
     <td>${a.guru?.dom||'—'}</td><td>${a.guru?.tingkatan||'—'}</td>
-    <td>${a.tanggal}</td>
+    <td>${a.hijri_label||a.tanggal}</td>
     <td><span class="badge ${a.status}">${lbl[a.status]||a.status}</span></td>
     <td style="color:var(--abu);font-size:12.5px">${a.keterangan||'—'}</td>
   </tr>`).join('');
 }
 
-// ===== REKAP =====
+// ===== REKAP HIJRIAH KALENDER =====
 async function loadRekap(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
-  const bulan=document.getElementById('f-bulan').value, tahun=document.getElementById('f-tahun').value;
-  const start=`${tahun}-${String(bulan).padStart(2,'0')}-01`;
-  const end=`${tahun}-${String(bulan).padStart(2,'0')}-31`;
-  const {data,error}=await sb.from('absensi').select('id_pps,status,guru(nama,dom)').gte('tanggal',start).lte('tanggal',end);
+  const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
+  const hTahun = parseInt(document.getElementById('f-tahun-hijri').value);
+  const bulanLabel = BLN_H[hBulan] + ' ' + hTahun + ' H';
+
+  // Cari semua absensi yang punya hijri_label mengandung bulan ini
+  // Format: "dd BulanNama YYYY"
+  const namaBulan = BLN_H[hBulan];
+  document.getElementById('rekap-info').textContent = 'Memuat rekap ' + bulanLabel + '...';
+
+  // Ambil semua absensi, filter di client berdasarkan hijri_label
+  const {data, error} = await sb.from('absensi')
+    .select('id_pps,status,tanggal,hijri_label,guru(nama,dom,tingkatan)')
+    .order('tanggal');
   if(error){ toast('Gagal: '+error.message,'err'); return; }
-  const map={};
-  (data||[]).forEach(a=>{
-    if(!map[a.id_pps]) map[a.id_pps]={nama:a.guru?.nama||a.id_pps,dom:a.guru?.dom||'—',H:0,A:0,I:0,S:0};
-    map[a.id_pps][a.status]++;
+
+  // Filter hanya record bulan Hijriah yang dipilih
+  const records = (data||[]).filter(a => {
+    if(!a.hijri_label) return false;
+    const parts = a.hijri_label.split(' ');
+    return parts[1]===namaBulan && parts[2]===String(hTahun);
   });
-  const tb=document.getElementById('tb-rekap');
-  const rows=Object.entries(map);
-  if(!rows.length){ tb.innerHTML='<tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Tidak ada data bulan ini</p></div></td></tr>'; return; }
-  tb.innerHTML=rows.sort((a,b)=>a[1].nama.localeCompare(b[1].nama)).map(([,r],i)=>{
-    const tot=r.H+r.A+r.I+r.S, pct=tot>0?Math.round(r.H/tot*100):0;
-    const w=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
-    return `<tr><td>${i+1}</td><td style="font-weight:600">${r.nama}</td><td>${r.dom}</td>
-      <td style="color:#2e7d32;font-weight:700">${r.H}</td>
-      <td style="color:#c62828;font-weight:700">${r.A}</td>
-      <td style="color:#f57f17;font-weight:700">${r.I}</td>
-      <td style="color:#1565c0;font-weight:700">${r.S}</td>
-      <td style="color:var(--abu)">${tot}</td>
-      <td style="font-weight:700;color:${w}">${pct}%</td></tr>`;
+
+  // Kumpulkan semua tanggal Hijriah yang ada
+  const tglSet = new Set();
+  records.forEach(a => tglSet.add(a.hijri_label));
+  const tglArr = Array.from(tglSet).sort((a,b)=>{
+    const da=parseInt(a.split(' ')[0]), db=parseInt(b.split(' ')[0]);
+    return da-db;
+  });
+
+  // Map: id_pps → { nama, dom, tingkatan, tgl→status }
+  const map = {};
+  records.forEach(a => {
+    if(!map[a.id_pps]) map[a.id_pps]={
+      nama: a.guru?.nama||a.id_pps,
+      dom: a.guru?.dom||'—',
+      tingkatan: a.guru?.tingkatan||'—',
+      tgl:{}
+    };
+    map[a.id_pps].tgl[a.hijri_label] = a.status;
+  });
+
+  const info = document.getElementById('rekap-info');
+  const thead = document.getElementById('thead-rekap');
+  const tb = document.getElementById('tb-rekap');
+
+  if(!tglArr.length){
+    info.textContent = 'Tidak ada data untuk ' + bulanLabel;
+    thead.innerHTML='';
+    tb.innerHTML='<tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Belum ada absensi bulan ' + bulanLabel + '</p></div></td></tr>';
+    return;
+  }
+
+  info.textContent = bulanLabel + ' · ' + tglArr.length + ' hari · ' + Object.keys(map).length + ' guru';
+
+  // Header: #, Nama, Dom, Tingkat, [tgl1..tglN], H, A, I, S, %
+  const tglHeaders = tglArr.map(t=>`<th class="kal-head-tgl">${t.split(' ')[0]}</th>`).join('');
+  thead.innerHTML = `<tr>
+    <th>#</th><th>Nama Guru</th><th>Dom</th><th>Tingkat</th>
+    ${tglHeaders}
+    <th>H</th><th>A</th><th>I</th><th>S</th><th>%</th>
+  </tr>`;
+
+  const rows = Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
+  const warna = {H:'#e8f5e9',A:'#fce4ec',I:'#fff8e1',S:'#e3f2fd'};
+  const wtext = {H:'#2e7d32',A:'#c62828',I:'#f57f17',S:'#1565c0'};
+
+  tb.innerHTML = rows.map(([,r],i)=>{
+    const kalCells = tglArr.map(t=>{
+      const st = r.tgl[t];
+      if(!st) return `<td style="text-align:center"><span class="kal-cell kosong">·</span></td>`;
+      return `<td style="text-align:center"><span class="kal-cell ${st}" title="${t}: ${st}">${st}</span></td>`;
+    }).join('');
+    const H=Object.values(r.tgl).filter(v=>v==='H').length;
+    const A=Object.values(r.tgl).filter(v=>v==='A').length;
+    const I=Object.values(r.tgl).filter(v=>v==='I').length;
+    const S=Object.values(r.tgl).filter(v=>v==='S').length;
+    const tot=H+A+I+S, pct=tot>0?Math.round(H/tot*100):0;
+    const pw=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
+    return `<tr>
+      <td>${i+1}</td>
+      <td style="font-weight:600;white-space:nowrap">${r.nama}</td>
+      <td>${r.dom}</td><td>${r.tingkatan}</td>
+      ${kalCells}
+      <td style="color:#2e7d32;font-weight:700;text-align:center">${H}</td>
+      <td style="color:#c62828;font-weight:700;text-align:center">${A}</td>
+      <td style="color:#f57f17;font-weight:700;text-align:center">${I}</td>
+      <td style="color:#1565c0;font-weight:700;text-align:center">${S}</td>
+      <td style="font-weight:700;color:${pw};text-align:center">${pct}%</td>
+    </tr>`;
   }).join('');
 }
 
@@ -742,9 +978,7 @@ function previewExcel(input){
     const ws=wb.Sheets[wb.SheetNames[0]];
     const json=XLSX.utils.sheet_to_json(ws,{header:1});
     if(json.length<2){ toast('File kosong!','err'); return; }
-    // Normalisasi header: lowercase + hapus semua spasi
     const headers=json[0].map(h=>String(h).toLowerCase().replace(/\s+/g,'').trim());
-    // "ID PPS" → "idpps", "id_pps" → "idpps", "Tingkat"/"tingkatan" → cocok
     const iId=headers.findIndex(h=>h.includes('idpps')||h.includes('id_pps')||h==='id'||h==='noid'||h==='nopps');
     const iNm=headers.findIndex(h=>h.includes('nama'));
     const iDm=headers.findIndex(h=>h.includes('dom'));
@@ -754,7 +988,7 @@ function previewExcel(input){
       const r=json[i];
       if(!r[iNm]) continue;
       const idVal=String(r[iId]!==undefined&&r[iId]!==null?r[iId]:'').trim();
-      if(!idVal) continue; // skip baris tanpa ID PPS
+      if(!idVal) continue;
       prevData.push({id_pps:idVal,nama:String(r[iNm]||'').trim(),dom:String(r[iDm]!==undefined?r[iDm]:'').trim(),tingkatan:String(r[iTk]!==undefined?r[iTk]:'').trim()});
     }
     document.getElementById('prev-count').textContent=prevData.length;
@@ -769,9 +1003,7 @@ async function importGuru(){
   if(!prevData.length) return;
   const btn=document.getElementById('btn-import');
   btn.disabled=true;
-  // Import per batch 50 supaya tidak error 500
-  const BATCH=50;
-  let sukses=0, gagal=0;
+  const BATCH=50; let sukses=0, gagal=0;
   try {
     for(let i=0;i<prevData.length;i+=BATCH){
       const batch=prevData.slice(i,i+BATCH);
@@ -797,4 +1029,3 @@ function toast(msg,type=''){
 }
 </script>
 </body>
-</html>
