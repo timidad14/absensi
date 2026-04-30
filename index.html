@@ -1,689 +1,687 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Presensi Digital — Madrasah Idadiyah al-Miftah</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&family=Amiri:wght@400;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root {
-      --emerald:    #1a6b47;
-      --emerald-lt: #27a469;
-      --gold:       #c9963a;
-      --gold-lt:    #e8b86d;
-      --cream:      #f9f4ec;
-      --ink:        #1c1c1c;
-      --muted:      #6b6b5e;
-      --glass:      rgba(255,255,255,0.08);
-      --border:     rgba(201,150,58,0.35);
-      --shadow:     0 24px 64px rgba(0,0,0,0.45);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Absensi Guru — Idadiyah al-Miftah</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+  :root {
+    --hijau-tua: #1a3a2a;
+    --hijau: #2d6a4f;
+    --hijau-muda: #40916c;
+    --emas: #c9a84c;
+    --emas-muda: #f0d080;
+    --krem: #fdf6e3;
+    --putih: #ffffff;
+    --merah: #c0392b;
+    --kuning: #f39c12;
+    --biru: #2980b9;
+    --abu: #6c757d;
+    --border: #e5e0d5;
+    --sidebar-w: 240px;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--krem); color:#1a1a1a; display:flex; min-height:100vh; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  /* SIDEBAR */
+  .sidebar { width:var(--sidebar-w); background:var(--hijau-tua); min-height:100vh; display:flex; flex-direction:column; position:fixed; top:0; left:0; z-index:100; }
+  .sidebar-logo { padding:22px 20px; border-bottom:1px solid rgba(201,168,76,.25); text-align:center; }
+  .sidebar-logo .arabic { font-family:'Amiri',serif; color:var(--emas); font-size:22px; display:block; margin-bottom:4px; }
+  .sidebar-logo .nama { color:white; font-size:13px; font-weight:700; }
+  .sidebar-logo .sub { color:rgba(255,255,255,.45); font-size:10px; letter-spacing:1.5px; text-transform:uppercase; margin-top:2px; }
+  .sidebar-nav { flex:1; padding:14px 10px; display:flex; flex-direction:column; gap:3px; }
+  .nav-item { display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:8px; cursor:pointer; color:rgba(255,255,255,.6); font-size:13.5px; font-weight:500; transition:all .18s; border:none; background:none; width:100%; text-align:left; }
+  .nav-item:hover { background:rgba(255,255,255,.08); color:white; }
+  .nav-item.active { background:var(--emas); color:var(--hijau-tua); font-weight:700; }
+  .nav-item .icon { font-size:16px; min-width:20px; }
+  .sidebar-footer { padding:14px; border-top:1px solid rgba(255,255,255,.08); color:rgba(255,255,255,.35); font-size:11px; text-align:center; line-height:1.5; }
 
-    body {
-      font-family: 'Lato', sans-serif;
-      background: #0f2318;
-      min-height: 100vh;
-      overflow-x: hidden;
-      color: var(--cream);
-    }
+  /* MAIN */
+  .main { margin-left:var(--sidebar-w); flex:1; display:flex; flex-direction:column; }
+  .topbar { background:white; border-bottom:1px solid var(--border); padding:13px 28px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:50; }
+  .topbar-title { font-size:17px; font-weight:700; color:var(--hijau-tua); }
+  .topbar-right { display:flex; align-items:center; gap:12px; }
+  .status-badge { display:flex; align-items:center; gap:6px; padding:6px 12px; border-radius:20px; font-size:12px; font-weight:600; }
+  .status-badge.connected { background:#e8f5e9; color:#2e7d32; }
+  .status-badge.disconnected { background:#fce4ec; color:#c62828; }
+  .status-badge .dot { width:7px; height:7px; border-radius:50%; }
+  .status-badge.connected .dot { background:#43a047; animation:pulse 2s infinite; }
+  .status-badge.disconnected .dot { background:#e53935; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  .tanggal-top { font-size:13px; color:var(--abu); font-weight:500; }
+  .content { padding:24px 28px; flex:1; }
+  .page { display:none; }
+  .page.active { display:block; }
 
-    /* ─── BACKGROUND ─────────────────────────── */
-    .bg-wrap {
-      position: fixed; inset: 0; z-index: 0;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(26,107,71,0.45) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 80% at 80% 90%, rgba(201,150,58,0.20) 0%, transparent 60%),
-        linear-gradient(160deg, #0d1f14 0%, #12291a 50%, #0a1a0f 100%);
-    }
-    .bg-wrap::after {
-      content: '';
-      position: absolute; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9963a' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-      opacity: .6;
-    }
+  /* CONFIG */
+  .config-card { background:var(--hijau-tua); border-radius:12px; padding:20px 24px; margin-bottom:22px; display:flex; align-items:flex-end; gap:16px; flex-wrap:wrap; }
+  .config-card label { color:rgba(255,255,255,.6); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; display:block; margin-bottom:6px; }
+  .config-card input { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:9px 14px; color:white; font-size:13px; width:290px; outline:none; font-family:monospace; }
+  .config-card input:focus { border-color:var(--emas); }
+  .config-card input::placeholder { color:rgba(255,255,255,.3); }
+  .btn-hubung { background:var(--emas); color:var(--hijau-tua); border:none; padding:10px 22px; border-radius:8px; font-size:13px; font-weight:700; cursor:pointer; }
+  .btn-hubung:hover { background:var(--emas-muda); }
 
-    /* ─── LAYOUT ─────────────────────────────── */
-    .wrap {
-      position: relative; z-index: 1;
-      max-width: 560px;
-      margin: 0 auto;
-      padding: 40px 20px 60px;
-      display: flex; flex-direction: column; gap: 32px;
-    }
+  /* CARD & TABLE */
+  .card { background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden; margin-bottom:20px; }
+  .card-header { padding:15px 20px; border-bottom:1px solid #f0ebe0; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; }
+  .card-title { font-size:14px; font-weight:700; color:var(--hijau-tua); }
+  .card-sub { font-size:12px; color:var(--abu); margin-top:2px; }
+  table { width:100%; border-collapse:collapse; }
+  th { background:var(--krem); padding:10px 16px; text-align:left; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--abu); border-bottom:1px solid var(--border); }
+  td { padding:11px 16px; font-size:13.5px; border-bottom:1px solid #f5f0e8; vertical-align:middle; }
+  tr:last-child td { border-bottom:none; }
+  tr:hover td { background:#fdf8f0; }
+  .badge { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+  .badge.H { background:#e8f5e9; color:#2e7d32; }
+  .badge.A { background:#fce4ec; color:#c62828; }
+  .badge.I { background:#fff8e1; color:#f57f17; }
+  .badge.S { background:#e3f2fd; color:#1565c0; }
+  .empty-state { text-align:center; padding:40px; color:var(--abu); }
+  .empty-state .icon { font-size:36px; margin-bottom:10px; }
+  .empty-state p { font-size:13px; }
 
-    /* ─── HEADER ─────────────────────────────── */
-    .header { text-align: center; }
-    .header .logo-row {
-      display: flex; align-items: center; justify-content: center; gap: 14px;
-      margin-bottom: 10px;
-    }
-    .logo-emblem {
-      width: 52px; height: 52px;
-      border: 2px solid var(--gold);
-      border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px;
-      background: rgba(201,150,58,0.12);
-      box-shadow: 0 0 16px rgba(201,150,58,0.25);
-    }
-    .header h1 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(18px, 4vw, 26px);
-      font-weight: 700;
-      letter-spacing: 2px;
-      line-height: 1.2;
-      color: var(--gold-lt);
-      text-shadow: 0 0 20px rgba(201,150,58,0.4);
-    }
-    .header .sub {
-      font-family: 'Amiri', serif;
-      font-size: 15px;
-      color: rgba(249,244,236,0.6);
-      margin-top: 4px;
-    }
-    .divider-ornament {
-      display: flex; align-items: center; gap: 12px;
-      margin: 14px auto 0; width: fit-content;
-    }
-    .divider-ornament span { color: var(--gold); font-size: 18px; }
-    .divider-ornament::before, .divider-ornament::after {
-      content: '';
-      display: block; width: 60px; height: 1px;
-      background: linear-gradient(90deg, transparent, var(--gold), transparent);
-    }
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(155px,1fr)); gap:14px; margin-bottom:22px; }
+  .stat-card { background:white; border-radius:12px; padding:18px; border:1px solid var(--border); position:relative; overflow:hidden; }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+  .stat-card.s-hadir::before { background:var(--hijau); }
+  .stat-card.s-alpha::before { background:var(--merah); }
+  .stat-card.s-total::before { background:var(--emas); }
+  .stat-card.s-persen::before { background:var(--biru); }
+  .stat-icon { font-size:22px; margin-bottom:8px; }
+  .stat-label { font-size:10px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; color:var(--abu); margin-bottom:5px; }
+  .stat-value { font-size:30px; font-weight:700; color:var(--hijau-tua); line-height:1; }
+  .stat-desc { font-size:11px; color:var(--abu); margin-top:4px; }
 
-    /* ─── CARD ───────────────────────────────── */
-    .card {
-      background: rgba(18,35,22,0.7);
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 32px 28px;
-      backdrop-filter: blur(18px);
-      box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.06);
-    }
-    .card-title {
-      font-family: 'Cinzel', serif;
-      font-size: 13px;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 24px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .card-title::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(90deg, var(--border), transparent);
-    }
+  /* CHECK-IN */
+  .checkin-wrap { display:grid; grid-template-columns:1fr 300px; gap:20px; align-items:start; }
+  .checkin-box { background:var(--hijau-tua); border-radius:16px; padding:36px 40px; text-align:center; position:relative; overflow:hidden; }
+  .checkin-box::before { content:''; position:absolute; top:-40px; right:-40px; width:180px; height:180px; border-radius:50%; background:rgba(201,168,76,.07); }
+  .checkin-box::after { content:''; position:absolute; bottom:-60px; left:-30px; width:220px; height:220px; border-radius:50%; background:rgba(64,145,108,.1); }
+  .checkin-arabic { font-family:'Amiri',serif; color:var(--emas); font-size:28px; display:block; margin-bottom:4px; }
+  .checkin-subtitle { color:rgba(255,255,255,.5); font-size:12px; letter-spacing:2px; text-transform:uppercase; margin-bottom:6px; }
+  .checkin-jam { color:rgba(255,255,255,.7); font-size:28px; font-weight:700; margin-bottom:4px; }
+  .checkin-tgl { color:rgba(255,255,255,.45); font-size:13px; margin-bottom:28px; }
+  .checkin-label { color:rgba(255,255,255,.55); font-size:11px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase; display:block; margin-bottom:10px; text-align:left; position:relative; z-index:1; }
+  .checkin-input { width:100%; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.2); border-radius:10px; padding:14px 18px; color:white; font-size:22px; font-weight:700; letter-spacing:3px; outline:none; font-family:'Plus Jakarta Sans',sans-serif; text-align:center; transition:all .2s; position:relative; z-index:1; }
+  .checkin-input:focus { border-color:var(--emas); background:rgba(255,255,255,.15); }
+  .checkin-input::placeholder { color:rgba(255,255,255,.25); font-size:14px; letter-spacing:1px; font-weight:400; }
+  .checkin-hint { color:rgba(255,255,255,.4); font-size:12px; margin-top:10px; position:relative; z-index:1; }
 
-    /* ─── FORM ───────────────────────────────── */
-    .field { margin-bottom: 20px; }
-    .field label {
-      display: block;
-      font-size: 11px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(249,244,236,0.5);
-      margin-bottom: 8px;
-    }
-    .field input, .field select {
-      width: 100%;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(201,150,58,0.25);
-      border-radius: 10px;
-      padding: 14px 16px;
-      color: var(--cream);
-      font-family: 'Lato', sans-serif;
-      font-size: 16px;
-      transition: border-color .25s, box-shadow .25s, background .25s;
-      outline: none;
-    }
-    .field input::placeholder { color: rgba(249,244,236,0.25); }
-    .field input:focus, .field select:focus {
-      border-color: var(--gold);
-      background: rgba(201,150,58,0.07);
-      box-shadow: 0 0 0 3px rgba(201,150,58,0.12);
-    }
-    .field select option { background: #1a2e20; }
+  .checkin-feedback { border-radius:12px; padding:20px 24px; margin-top:20px; display:none; position:relative; z-index:1; text-align:left; }
+  .checkin-feedback.sukses { background:rgba(46,125,50,.2); border:1.5px solid rgba(46,125,50,.4); display:block; }
+  .checkin-feedback.gagal { background:rgba(198,40,40,.18); border:1.5px solid rgba(198,40,40,.35); display:block; }
+  .fb-nama { color:white; font-size:20px; font-weight:700; margin-bottom:4px; }
+  .fb-detail { color:rgba(255,255,255,.6); font-size:13px; }
+  .fb-badge { display:inline-flex; align-items:center; gap:6px; border-radius:20px; padding:4px 14px; font-size:13px; font-weight:700; margin-top:10px; }
+  .fb-badge.hadir { background:rgba(46,125,50,.3); color:#a5d6a7; }
+  .fb-badge.sudah { background:rgba(201,168,76,.2); color:var(--emas-muda); }
+  .fb-badge.notfound { background:rgba(198,40,40,.25); color:#ef9a9a; }
 
-    /* preview row */
-    .preview-row {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-      margin-bottom: 20px;
-    }
-    .preview-box {
-      background: rgba(26,107,71,0.12);
-      border: 1px solid rgba(26,107,71,0.3);
-      border-radius: 10px;
-      padding: 12px 14px;
-    }
-    .preview-box .pb-label {
-      font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--emerald-lt); margin-bottom: 4px;
-    }
-    .preview-box .pb-value {
-      font-weight: 700; font-size: 15px;
-      color: var(--cream); min-height: 22px;
-    }
-    .preview-box.hidden-box { display: none; }
+  /* PANEL KANAN CHECK-IN */
+  .checkin-side { display:flex; flex-direction:column; gap:14px; }
+  .side-stat { background:white; border-radius:12px; border:1px solid var(--border); padding:16px 18px; display:flex; align-items:center; gap:14px; }
+  .side-icon { width:44px; height:44px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:20px; }
+  .side-icon.hijau { background:#e8f5e9; }
+  .side-icon.emas { background:#fff8e1; }
+  .side-val { font-size:26px; font-weight:700; color:var(--hijau-tua); line-height:1; }
+  .side-lbl { font-size:12px; color:var(--abu); margin-top:2px; }
+  .log-card { background:white; border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+  .log-header { padding:12px 16px; border-bottom:1px solid var(--border); font-size:13px; font-weight:700; color:var(--hijau-tua); }
+  .log-list { max-height:300px; overflow-y:auto; }
+  .log-item { padding:10px 16px; border-bottom:1px solid #f5f0e8; display:flex; align-items:center; gap:10px; animation:slideIn .3s ease; }
+  @keyframes slideIn { from{opacity:0;transform:translateX(-8px)} to{opacity:1;transform:translateX(0)} }
+  .log-item:last-child { border-bottom:none; }
+  .log-av { width:32px; height:32px; border-radius:8px; background:var(--hijau); color:white; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:700; flex-shrink:0; }
+  .log-nama { font-size:13px; font-weight:600; color:var(--hijau-tua); }
+  .log-sub { font-size:11px; color:var(--abu); margin-top:1px; }
+  .log-empty { padding:20px; text-align:center; color:var(--abu); font-size:13px; }
 
-    /* status badge */
-    .status-badge {
-      display: none;
-      align-items: center; gap: 8px;
-      font-size: 13px; padding: 10px 14px;
-      border-radius: 8px; margin-bottom: 16px;
-    }
-    .status-badge.info  { display:flex; background: rgba(26,107,71,0.15); border:1px solid rgba(39,164,105,0.3); color:#7ed4a8; }
-    .status-badge.error { display:flex; background: rgba(200,40,40,0.12); border:1px solid rgba(200,40,40,0.3); color:#f4908a; }
-    .status-badge.ok    { display:flex; background: rgba(201,150,58,0.12); border:1px solid rgba(201,150,58,0.3); color:var(--gold-lt); }
+  /* ADMIN */
+  .admin-header { display:grid; grid-template-columns:36px 1fr 90px 160px 1fr; gap:10px; padding:10px 16px; background:var(--krem); border-bottom:1px solid var(--border); }
+  .admin-header span { font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--abu); }
+  .admin-row { display:grid; grid-template-columns:36px 1fr 90px 160px 1fr; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid #f5f0e8; }
+  .admin-row:hover { background:#fdf8f0; }
+  .admin-row:last-child { border-bottom:none; }
+  .admin-no { color:var(--abu); font-size:12px; font-weight:600; text-align:center; }
+  .admin-nama { font-weight:600; font-size:13.5px; color:var(--hijau-tua); }
+  .admin-sub { font-size:11px; color:var(--abu); }
+  .status-toggle { display:flex; gap:5px; }
+  .toggle-btn { padding:5px 11px; border-radius:6px; border:1.5px solid #ddd; background:white; font-size:12px; font-weight:700; cursor:pointer; transition:all .15s; }
+  .toggle-btn:hover { border-color:#aaa; }
+  .toggle-btn.sel-H { background:var(--hijau); border-color:var(--hijau); color:white; }
+  .toggle-btn.sel-A { background:var(--merah); border-color:var(--merah); color:white; }
+  .toggle-btn.sel-I { background:var(--kuning); border-color:var(--kuning); color:white; }
+  .toggle-btn.sel-S { background:var(--biru); border-color:var(--biru); color:white; }
+  .ket-input { border:1.5px solid #e0ddd5; border-radius:6px; padding:6px 10px; font-size:12px; width:100%; outline:none; font-family:inherit; background:white; }
+  .ket-input:focus { border-color:var(--hijau-muda); }
 
-    /* button */
-    .btn {
-      width: 100%; padding: 16px;
-      border: none; border-radius: 12px;
-      font-family: 'Cinzel', serif;
-      font-size: 14px; letter-spacing: 2px;
-      cursor: pointer;
-      transition: all .25s;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--emerald) 0%, var(--emerald-lt) 100%);
-      color: #fff;
-      box-shadow: 0 6px 24px rgba(39,164,105,0.3);
-    }
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 32px rgba(39,164,105,0.45);
-    }
-    .btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-    .btn-gold {
-      background: linear-gradient(135deg, #a07020 0%, var(--gold) 100%);
-      color: #fff;
-      box-shadow: 0 6px 24px rgba(201,150,58,0.25);
-    }
-    .btn-gold:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(201,150,58,0.4); }
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--gold-lt);
-    }
-    .btn-outline:hover { background: rgba(201,150,58,0.08); }
-    .btn-sm {
-      padding: 10px 16px; font-size: 12px; width: auto;
-    }
+  /* BTN */
+  .btn { padding:9px 20px; border-radius:8px; border:none; font-size:13px; font-weight:700; cursor:pointer; transition:all .2s; font-family:inherit; display:inline-flex; align-items:center; gap:7px; }
+  .btn-hijau { background:var(--hijau); color:white; }
+  .btn-hijau:hover { background:var(--hijau-muda); transform:translateY(-1px); }
+  .btn-hijau:disabled { background:#ccc; cursor:not-allowed; transform:none; }
+  .btn-emas { background:var(--emas); color:var(--hijau-tua); }
+  .btn-emas:hover { background:var(--emas-muda); }
 
-    /* ─── TABS ───────────────────────────────── */
-    .tabs {
-      display: flex; gap: 4px;
-      background: rgba(0,0,0,0.25);
-      border-radius: 12px; padding: 4px;
-      margin-bottom: 28px;
-    }
-    .tab {
-      flex: 1; padding: 11px;
-      background: transparent; border: none;
-      border-radius: 10px;
-      font-family: 'Lato', sans-serif;
-      font-size: 13px; color: rgba(249,244,236,0.5);
-      cursor: pointer; transition: all .2s;
-    }
-    .tab.active {
-      background: rgba(26,107,71,0.5);
-      color: var(--cream);
-      font-weight: 700;
-    }
+  /* FILTER */
+  .filter-bar { display:flex; gap:10px; margin-bottom:18px; align-items:center; flex-wrap:wrap; }
+  .filter-bar select, .filter-bar input[type="number"], .filter-bar input[type="date"] { border:1.5px solid #ddd; border-radius:8px; padding:8px 12px; font-size:13px; outline:none; font-family:inherit; background:white; }
 
-    /* ─── ARSIP ──────────────────────────────── */
-    #page-arsip { display: none; }
+  /* UPLOAD */
+  .upload-zone { border:2px dashed var(--emas); border-radius:12px; padding:44px; text-align:center; cursor:pointer; transition:all .2s; background:rgba(201,168,76,.04); }
+  .upload-zone:hover { background:rgba(201,168,76,.1); border-color:var(--hijau); }
+  .upload-zone .icon { font-size:44px; margin-bottom:14px; }
+  .upload-zone h3 { font-size:15px; color:var(--hijau-tua); margin-bottom:6px; }
+  .upload-zone p { font-size:13px; color:var(--abu); }
+  #file-excel { display:none; }
+  .info-box { background:#fff8e1; border:1px solid #ffe082; border-radius:8px; padding:12px 16px; font-size:13px; color:#795548; margin-bottom:16px; line-height:1.5; }
 
-    .filter-row {
-      display: grid; grid-template-columns: 1fr 1fr auto; gap: 10px;
-      align-items: end; margin-bottom: 20px;
-    }
-    .filter-row .field { margin-bottom: 0; }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-    }
-    table { width: 100%; border-collapse: collapse; font-size: 13px; }
-    thead th {
-      background: rgba(26,107,71,0.25);
-      padding: 12px 14px;
-      text-align: left;
-      font-family: 'Cinzel', serif;
-      font-size: 11px; letter-spacing: 1.5px;
-      color: var(--gold-lt);
-      white-space: nowrap;
-    }
-    tbody tr {
-      border-top: 1px solid rgba(201,150,58,0.1);
-      transition: background .15s;
-    }
-    tbody tr:hover { background: rgba(201,150,58,0.05); }
-    tbody td { padding: 11px 14px; color: rgba(249,244,236,0.85); }
-    .badge-hadir  { color: #7ed4a8; font-weight: 700; }
-    .badge-alpha  { color: #f4908a; font-weight: 700; }
-    .empty-state {
-      text-align: center; padding: 40px 20px;
-      color: rgba(249,244,236,0.3);
-      font-size: 14px;
-    }
-
-    /* stats row */
-    .stats-row {
-      display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
-      margin-bottom: 20px;
-    }
-    .stat-box {
-      background: rgba(0,0,0,0.2);
-      border: 1px solid var(--border);
-      border-radius: 12px; padding: 14px;
-      text-align: center;
-    }
-    .stat-box .sv { font-size: 26px; font-weight: 700; color: var(--gold-lt); font-family: 'Cinzel', serif; }
-    .stat-box .sl { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: rgba(249,244,236,0.4); margin-top: 2px; }
-
-    /* ─── FOOTER ─────────────────────────────── */
-    footer {
-      text-align: center;
-      font-size: 11px; letter-spacing: 1px;
-      color: rgba(249,244,236,0.2);
-    }
-
-    /* ─── LOADER ─────────────────────────────── */
-    .spinner {
-      width: 18px; height: 18px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin .6s linear infinite;
-      display: inline-block;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ─── ANIMATE IN ─────────────────────────── */
-    .fade-up {
-      opacity: 0; transform: translateY(18px);
-      animation: fadeUp .5s ease forwards;
-    }
-    .fade-up:nth-child(1) { animation-delay: .1s; }
-    .fade-up:nth-child(2) { animation-delay: .2s; }
-    .fade-up:nth-child(3) { animation-delay: .3s; }
-    @keyframes fadeUp {
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    @media (max-width: 480px) {
-      .filter-row { grid-template-columns: 1fr 1fr; }
-      .filter-row .btn { grid-column: span 2; }
-    }
-  </style>
+  /* UTIL */
+  .loading { display:inline-block; width:15px; height:15px; border:2px solid rgba(255,255,255,.3); border-top-color:white; border-radius:50%; animation:spin .8s linear infinite; }
+  @keyframes spin { to{transform:rotate(360deg)} }
+  .toast { position:fixed; bottom:24px; right:24px; background:var(--hijau-tua); color:white; padding:13px 18px; border-radius:10px; font-size:13px; font-weight:600; z-index:9999; transform:translateY(80px); opacity:0; transition:all .3s; max-width:320px; border-left:4px solid var(--emas); }
+  .toast.show { transform:translateY(0); opacity:1; }
+  .toast.error { border-left-color:var(--merah); }
+  .toast.success { border-left-color:#43a047; }
+  code { font-size:12px; background:#f5f5f5; padding:2px 7px; border-radius:4px; font-family:monospace; }
+</style>
 </head>
 <body>
-<div class="bg-wrap"></div>
 
-<div class="wrap">
-
-  <!-- HEADER -->
-  <div class="header fade-up">
-    <div class="logo-row">
-      <div class="logo-emblem">🕌</div>
-      <div>
-        <h1>Idadiyah al-Miftah</h1>
-        <div class="sub">Presensi Digital Madrasah</div>
-      </div>
-    </div>
-    <div class="divider-ornament"><span>✦</span></div>
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <span class="arabic">إدادية المفتاح</span>
+    <div class="nama">Tarbiyah Idadiyah al-Miftah</div>
+    <div class="sub">Sistem Absensi Guru</div>
   </div>
-
-  <!-- TABS -->
-  <div class="fade-up" style="animation-delay:.15s">
-    <div class="tabs">
-      <button class="tab active" onclick="showPage('absen')">📋 Absensi</button>
-      <button class="tab" onclick="showPage('arsip')">📊 Arsip</button>
-    </div>
-
-    <!-- PAGE: ABSEN -->
-    <div id="page-absen">
-      <div class="card">
-        <div class="card-title">✦ Form Kehadiran</div>
-
-        <div class="field">
-          <label>ID PPS</label>
-          <input id="inp-id" type="text" placeholder="Masukkan ID PPS Anda" autocomplete="off"
-                 oninput="onIdInput()" maxlength="20"/>
-        </div>
-
-        <div id="status-badge" class="status-badge"></div>
-
-        <div class="preview-row" id="preview-row" style="display:none">
-          <div class="preview-box">
-            <div class="pb-label">Nama</div>
-            <div class="pb-value" id="pv-nama">—</div>
-          </div>
-          <div class="preview-box">
-            <div class="pb-label">Domisili</div>
-            <div class="pb-value" id="pv-dom">—</div>
-          </div>
-          <div class="preview-box">
-            <div class="pb-label">Tingkatan</div>
-            <div class="pb-value" id="pv-tingkat">—</div>
-          </div>
-          <div class="preview-box">
-            <div class="pb-label">Tanggal</div>
-            <div class="pb-value" id="pv-tanggal">—</div>
-          </div>
-        </div>
-
-        <button class="btn btn-primary" id="btn-absen" onclick="submitAbsen()" disabled>
-          <span id="btn-absen-text">✓ Tandai Hadir</span>
-        </button>
-      </div>
-    </div>
-
-    <!-- PAGE: ARSIP -->
-    <div id="page-arsip">
-      <div class="card">
-        <div class="card-title">✦ Rekap Presensi</div>
-
-        <div class="filter-row">
-          <div class="field">
-            <label>Bulan</label>
-            <select id="fil-bulan"></select>
-          </div>
-          <div class="field">
-            <label>Tahun</label>
-            <select id="fil-tahun"></select>
-          </div>
-          <button class="btn btn-gold btn-sm" onclick="loadArsip()">Tampilkan</button>
-        </div>
-
-        <div class="stats-row" id="stats-row" style="display:none">
-          <div class="stat-box"><div class="sv" id="st-total">0</div><div class="sl">Total</div></div>
-          <div class="stat-box"><div class="sv" id="st-hadir">0</div><div class="sl">Hadir</div></div>
-          <div class="stat-box"><div class="sv" id="st-unik">0</div><div class="sl">Santri</div></div>
-        </div>
-
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Nama</th>
-                <th>ID PPS</th>
-                <th>Tingkatan</th>
-                <th>Waktu</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="arsip-tbody">
-              <tr><td colspan="6"><div class="empty-state">Pilih bulan & tahun lalu klik Tampilkan</div></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div style="margin-top:16px; display:flex; gap:10px; justify-content:flex-end;">
-          <button class="btn btn-outline btn-sm" onclick="exportCSV()">⬇ Export CSV</button>
-        </div>
-      </div>
-    </div>
-  </div><!-- /tabs wrapper -->
-
-  <footer class="fade-up">
-    Madrasah Idadiyah al-Miftah &nbsp;·&nbsp; Sistem Presensi Digital
-  </footer>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="showPage('checkin',this)"><span class="icon">🖥️</span> Layar Check-in</button>
+    <button class="nav-item" onclick="showPage('admin',this)"><span class="icon">✏️</span> Input Admin</button>
+    <button class="nav-item" onclick="showPage('rekap',this)"><span class="icon">📅</span> Rekap Bulanan</button>
+    <button class="nav-item" onclick="showPage('guru',this)"><span class="icon">👤</span> Data Guru</button>
+    <button class="nav-item" onclick="showPage('upload',this)"><span class="icon">📤</span> Upload Excel</button>
+  </nav>
+  <div class="sidebar-footer">Madrasah Tarbiyah Idadiyah<br>al-Miftah · v2.0</div>
 </div>
 
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="page-title">Dashboard</div>
+    <div class="topbar-right">
+      <div class="status-badge disconnected" id="status-badge">
+        <div class="dot"></div><span id="status-text">Belum terhubung</span>
+      </div>
+      <div class="tanggal-top" id="tanggal-hari"></div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <div class="config-card" id="config-card">
+      <div>
+        <label>Supabase URL</label>
+        <input type="text" id="sb-url" placeholder="https://xxxx.supabase.co">
+      </div>
+      <div>
+        <label>Publishable / Anon Key</label>
+        <input type="text" id="sb-key" placeholder="sb_publishable_...">
+      </div>
+      <button class="btn-hubung" onclick="hubungSupabase()">🔗 Hubungkan</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card s-hadir"><div class="stat-icon">✅</div><div class="stat-label">Hadir Hari Ini</div><div class="stat-value" id="stat-hadir">—</div><div class="stat-desc">Guru check-in</div></div>
+        <div class="stat-card s-alpha"><div class="stat-icon">❌</div><div class="stat-label">Alpha Hari Ini</div><div class="stat-value" id="stat-alpha">—</div><div class="stat-desc">Dicatat admin</div></div>
+        <div class="stat-card s-total"><div class="stat-icon">👥</div><div class="stat-label">Total Guru</div><div class="stat-value" id="stat-total">—</div><div class="stat-desc">Terdaftar</div></div>
+        <div class="stat-card s-persen"><div class="stat-icon">📈</div><div class="stat-label">% Hadir Bulan Ini</div><div class="stat-value" id="stat-persen">—</div><div class="stat-desc">Rata-rata</div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">📋 Absensi Terkini</div><div class="card-sub">10 input terakhir</div></div>
+        </div>
+        <table>
+          <thead><tr><th>Nama Guru</th><th>Dom</th><th>Tingkatan</th><th>Tanggal</th><th>Status</th><th>Keterangan</th></tr></thead>
+          <tbody id="tabel-terkini"><tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><p>Belum ada data</p></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CHECK-IN -->
+    <div class="page" id="page-checkin">
+      <div class="checkin-wrap">
+        <div class="checkin-box">
+          <span class="checkin-arabic">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span>
+          <div class="checkin-subtitle">Absensi Guru · Idadiyah al-Miftah</div>
+          <div class="checkin-jam" id="ci-jam">00:00:00</div>
+          <div class="checkin-tgl" id="ci-tgl"></div>
+
+          <span class="checkin-label">Ketik ID PPS lalu tekan Enter</span>
+          <input type="text" class="checkin-input" id="checkin-input"
+            placeholder="Ketik ID PPS..." autocomplete="off"
+            onkeydown="if(event.key==='Enter') prosesCheckin()">
+          <div class="checkin-hint">Contoh: 14390784 → tekan Enter</div>
+
+          <div class="checkin-feedback" id="ci-feedback">
+            <div class="fb-nama" id="fb-nama"></div>
+            <div class="fb-detail" id="fb-detail"></div>
+            <div class="fb-badge" id="fb-badge"></div>
+          </div>
+        </div>
+
+        <div class="checkin-side">
+          <div class="side-stat">
+            <div class="side-icon hijau">✅</div>
+            <div><div class="side-val" id="ci-hadir">0</div><div class="side-lbl">Hadir Hari Ini</div></div>
+          </div>
+          <div class="side-stat">
+            <div class="side-icon emas">👥</div>
+            <div><div class="side-val" id="ci-total">0</div><div class="side-lbl">Total Guru</div></div>
+          </div>
+          <div class="log-card">
+            <div class="log-header">🕐 Check-in Terakhir</div>
+            <div class="log-list" id="log-list"><div class="log-empty">Belum ada check-in hari ini</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADMIN -->
+    <div class="page" id="page-admin">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">✏️ Input Admin — Koreksi Absensi</div><div class="card-sub">Catat Alpha, Izin, Sakit, atau koreksi kehadiran</div></div>
+          <div style="display:flex;gap:10px;align-items:center">
+            <input type="date" id="tgl-admin" style="border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;background:white">
+            <button class="btn btn-hijau" onclick="simpanAdmin()" id="btn-admin">💾 Simpan</button>
+          </div>
+        </div>
+        <div class="info-box" style="margin:16px">ℹ️ Halaman ini untuk admin mencatat guru yang <strong>Alpha, Izin, atau Sakit</strong>. Guru yang sudah check-in mandiri tidak perlu diinput lagi.</div>
+        <div class="admin-header">
+          <span>#</span><span>Nama Guru</span><span>Dom</span><span>Status</span><span>Keterangan</span>
+        </div>
+        <div id="admin-grid"><div class="empty-state" style="padding:40px"><div class="icon">👥</div><p>Upload data guru dulu.</p></div></div>
+      </div>
+    </div>
+
+    <!-- REKAP -->
+    <div class="page" id="page-rekap">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">📅 Rekap Bulanan</div><div class="card-sub">Rekapitulasi kehadiran per bulan</div></div>
+        </div>
+        <div style="padding:16px 20px">
+          <div class="filter-bar">
+            <select id="filter-bulan">
+              <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+              <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+              <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+              <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+            </select>
+            <input type="number" id="filter-tahun" value="2026" min="2020" max="2035" style="width:88px">
+            <button class="btn btn-hijau" onclick="loadRekap()">🔍 Tampilkan</button>
+          </div>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>Nama Guru</th><th>Dom</th><th>Hadir</th><th>Alpha</th><th>Izin</th><th>Sakit</th><th>% Hadir</th></tr></thead>
+          <tbody id="tabel-rekap"><tr><td colspan="8"><div class="empty-state"><div class="icon">📊</div><p>Pilih bulan lalu klik Tampilkan</p></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- DATA GURU -->
+    <div class="page" id="page-guru">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">👤 Data Guru</div><div class="card-sub" id="jumlah-guru">—</div></div>
+        </div>
+        <table>
+          <thead><tr><th>#</th><th>ID PPS</th><th>Nama Guru</th><th>Dom</th><th>Tingkatan</th></tr></thead>
+          <tbody id="tabel-guru"><tr><td colspan="5"><div class="empty-state"><div class="icon">👥</div><p>Belum ada data guru</p></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- UPLOAD -->
+    <div class="page" id="page-upload">
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">📤 Upload Data Guru via Excel</div><div class="card-sub">Format kolom: idpps · nama · dom · tingkatan</div></div>
+        </div>
+        <div style="padding:24px">
+          <div class="info-box">ℹ️ Pastikan baris pertama adalah header: <strong>idpps</strong>, <strong>nama</strong>, <strong>dom</strong>, <strong>tingkatan</strong>. Data yang sudah ada akan diperbarui.</div>
+          <div class="upload-zone" onclick="document.getElementById('file-excel').click()">
+            <div class="icon">📂</div>
+            <h3>Klik atau seret file Excel ke sini</h3>
+            <p>Format: .xlsx · .xls</p>
+            <button class="btn btn-emas" style="margin-top:14px" onclick="event.stopPropagation();document.getElementById('file-excel').click()">Pilih File</button>
+          </div>
+          <input type="file" id="file-excel" accept=".xlsx,.xls" onchange="previewExcel(this)">
+          <div id="preview-container" style="display:none;margin-top:24px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div class="card-title">👁️ Preview: <span id="preview-count">0</span> guru</div>
+              <button class="btn btn-hijau" onclick="importGuru()" id="btn-import">⬆️ Import ke Supabase</button>
+            </div>
+            <table>
+              <thead><tr><th>#</th><th>ID PPS</th><th>Nama</th><th>Dom</th><th>Tingkatan</th></tr></thead>
+              <tbody id="preview-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
 <script>
-// ─── SUPABASE INIT ──────────────────────────────────────────────────
-const { createClient } = supabase;
-const SUPA_URL = 'https://yghrrgyyjnwkehwguhfe.supabase.co';
-const SUPA_KEY = 'sb_publishable_DVo7QfAeDj7X5Wht4yAJ6g_PZDjMGC4';
-const db = createClient(SUPA_URL, SUPA_KEY);
+let sb = null, daftarGuru = [], previewData = [], logHariIni = [];
+const BLN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+const HARI = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 
-// Table names — adjust if yours differ
-const TBL_GURU    = 'guru';        // columns: id_pps, nama, dom, tingkatan
-const TBL_PRESENSI = 'presensi';  // columns: id_pps, nama, tingkatan, tanggal, waktu, status
+function fmtTgl(d) { return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN[d.getMonth()]} ${d.getFullYear()}`; }
+function fmtJam(d) { return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function fmtWaktu(d) { return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
+function today() { return new Date().toISOString().split('T')[0]; }
 
-// ─── STATE ─────────────────────────────────────────────────────────
-let currentGuru = null;
-let debounceTimer = null;
-let arsipData = [];
-
-// ─── UTILS ─────────────────────────────────────────────────────────
-const todayStr = () => {
-  const d = new Date();
-  return d.toLocaleDateString('id-ID', { weekday:'long', day:'2-digit', month:'long', year:'numeric' });
-};
-const todayISO = () => new Date().toISOString().split('T')[0];
-const nowTime  = () => new Date().toLocaleTimeString('id-ID', { hour:'2-digit', minute:'2-digit' });
-
-function setStatus(type, msg) {
-  const el = document.getElementById('status-badge');
-  el.className = 'status-badge ' + type;
-  el.innerHTML = msg;
-}
-function clearStatus() {
-  const el = document.getElementById('status-badge');
-  el.className = 'status-badge';
-  el.style.display = 'none';
-}
-
-// ─── TABS ───────────────────────────────────────────────────────────
-function showPage(name) {
-  document.getElementById('page-absen').style.display = name === 'absen' ? '' : 'none';
-  document.getElementById('page-arsip').style.display = name === 'arsip' ? '' : 'none';
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', (i === 0 && name === 'absen') || (i === 1 && name === 'arsip'));
-  });
-  if (name === 'arsip') initFilters();
-}
-
-// ─── ID INPUT ───────────────────────────────────────────────────────
-function onIdInput() {
-  clearTimeout(debounceTimer);
-  const val = document.getElementById('inp-id').value.trim();
-  currentGuru = null;
-  document.getElementById('btn-absen').disabled = true;
-  document.getElementById('preview-row').style.display = 'none';
-  clearStatus();
-  if (val.length < 2) return;
-  setStatus('info', '<div class="spinner"></div> Mencari data...');
-  debounceTimer = setTimeout(() => fetchGuru(val), 500);
-}
-
-async function fetchGuru(id) {
-  try {
-    const { data, error } = await db
-      .from(TBL_GURU)
-      .select('*')
-      .ilike('ID PPS', id)
-      .limit(1)
-      .single();
-
-    if (error || !data) {
-      setStatus('error', '✕ ID PPS tidak ditemukan dalam database');
-      return;
-    }
-
-    currentGuru = data;
-    document.getElementById('pv-nama').textContent    = data['NAMA'] || '—';
-    document.getElementById('pv-dom').textContent     = data['DOM'] || '—';
-    document.getElementById('pv-tingkat').textContent = data['TINGKATAN'] || '—';
-    document.getElementById('pv-tanggal').textContent = todayStr();
-    document.getElementById('preview-row').style.display = 'grid';
-    clearStatus();
-    document.getElementById('btn-absen').disabled = false;
-
-  } catch(e) {
-    setStatus('error', '✕ Gagal terhubung ke server');
-  }
-}
-
-// ─── SUBMIT ABSEN ───────────────────────────────────────────────────
-async function submitAbsen() {
-  if (!currentGuru) return;
-  const btn = document.getElementById('btn-absen');
-  const txt = document.getElementById('btn-absen-text');
-  btn.disabled = true;
-  txt.innerHTML = '<div class="spinner"></div>';
-
-  try {
-    // Check if already absent today
-    const { data: existing } = await db
-      .from(TBL_PRESENSI)
-      .select('id')
-      .eq('id_pps', currentGuru['ID PPS'])
-      .eq('tanggal', todayISO())
-      .limit(1);
-
-    if (existing && existing.length > 0) {
-      setStatus('ok', '⚠ Anda sudah melakukan absensi hari ini');
-      txt.innerHTML = '✓ Tandai Hadir';
-      btn.disabled = false;
-      return;
-    }
-
-    const row = {
-      id_pps:    currentGuru['ID PPS'],
-      nama:      currentGuru['NAMA'],
-      tingkatan: currentGuru['TINGKATAN'],
-      dom:       currentGuru['DOM'],
-      tanggal:   todayISO(),
-      waktu:     nowTime(),
-      status:    'Hadir',
-    };
-
-    const { error } = await db.from(TBL_PRESENSI).insert([row]);
-    if (error) throw error;
-
-    setStatus('ok', `✓ Hadir tercatat — ${currentGuru['NAMA']} · ${nowTime()}`);
-    txt.innerHTML = '✓ Tandai Hadir';
-    // reset form
-    document.getElementById('inp-id').value = '';
-    document.getElementById('preview-row').style.display = 'none';
-    currentGuru = null;
-
-  } catch(e) {
-    setStatus('error', '✕ Gagal menyimpan absensi: ' + (e.message || 'Coba lagi'));
-    txt.innerHTML = '✓ Tandai Hadir';
-    btn.disabled = false;
-  }
-}
-
-// ─── ARSIP ──────────────────────────────────────────────────────────
-function initFilters() {
-  const bulanSel = document.getElementById('fil-bulan');
-  const tahunSel = document.getElementById('fil-tahun');
-  if (bulanSel.options.length) return; // already init
-
-  const bulan = ['Januari','Februari','Maret','April','Mei','Juni',
-                 'Juli','Agustus','September','Oktober','November','Desember'];
-  bulan.forEach((b, i) => {
-    const o = document.createElement('option');
-    o.value = String(i + 1).padStart(2,'0');
-    o.textContent = b;
-    bulanSel.appendChild(o);
-  });
+document.addEventListener('DOMContentLoaded', () => {
   const now = new Date();
-  bulanSel.value = String(now.getMonth() + 1).padStart(2,'0');
+  document.getElementById('tanggal-hari').textContent = fmtTgl(now);
+  document.getElementById('ci-tgl').textContent = fmtTgl(now);
+  document.getElementById('tgl-admin').value = today();
+  document.getElementById('filter-bulan').value = now.getMonth() + 1;
+  document.getElementById('filter-tahun').value = now.getFullYear();
 
-  for (let y = now.getFullYear(); y >= 2023; y--) {
-    const o = document.createElement('option');
-    o.value = y; o.textContent = y;
-    tahunSel.appendChild(o);
+  setInterval(() => {
+    const n = new Date();
+    document.getElementById('ci-jam').textContent = fmtJam(n);
+  }, 1000);
+
+  const url = localStorage.getItem('sb_url');
+  const key = localStorage.getItem('sb_key');
+  if (url && key) {
+    document.getElementById('sb-url').value = url;
+    document.getElementById('sb-key').value = key;
+    hubungSupabase(true);
   }
+});
+
+function showPage(nama, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + nama).classList.add('active');
+  if (btn) btn.classList.add('active');
+  const titles = { dashboard:'Dashboard', checkin:'Layar Check-in Guru', admin:'Input Admin', rekap:'Rekap Bulanan', guru:'Data Guru', upload:'Upload Data Guru' };
+  document.getElementById('page-title').textContent = titles[nama];
+  if (nama === 'checkin') { document.getElementById('checkin-input').focus(); updateSideStats(); }
+  if (nama === 'admin') renderAdmin();
+  if (nama === 'guru') renderGuru();
+  if (nama === 'dashboard') loadDashboard();
 }
 
-async function loadArsip() {
-  const bulan = document.getElementById('fil-bulan').value;
-  const tahun = document.getElementById('fil-tahun').value;
-  const from  = `${tahun}-${bulan}-01`;
-  // last day of month
-  const last  = new Date(tahun, parseInt(bulan), 0).getDate();
-  const to    = `${tahun}-${bulan}-${last}`;
-
-  const tbody = document.getElementById('arsip-tbody');
-  tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><div class="spinner"></div></div></td></tr>`;
-  document.getElementById('stats-row').style.display = 'none';
-
+async function hubungSupabase(silent = false) {
+  const url = document.getElementById('sb-url').value.trim();
+  const key = document.getElementById('sb-key').value.trim();
+  if (!url || !key) { showToast('Isi URL dan Key!', 'error'); return; }
   try {
-    const { data, error } = await db
-      .from(TBL_PRESENSI)
-      .select('*')
-      .gte('tanggal', from)
-      .lte('tanggal', to)
-      .order('tanggal', { ascending: true })
-      .order('waktu',   { ascending: true });
-
+    const { createClient } = supabase;
+    sb = createClient(url, key);
+    const { error } = await sb.from('guru').select('count', { count:'exact', head:true });
     if (error) throw error;
-    arsipData = data || [];
-    renderArsip(arsipData);
+    localStorage.setItem('sb_url', url);
+    localStorage.setItem('sb_key', key);
+    document.getElementById('status-badge').className = 'status-badge connected';
+    document.getElementById('status-text').textContent = 'Terhubung';
+    document.getElementById('config-card').style.display = 'none';
+    if (!silent) showToast('✅ Berhasil terhubung!', 'success');
+    await loadGuru();
+    loadDashboard();
+    updateSideStats();
   } catch(e) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">Gagal memuat data: ${e.message}</div></td></tr>`;
+    document.getElementById('status-badge').className = 'status-badge disconnected';
+    document.getElementById('status-text').textContent = 'Gagal terhubung';
+    showToast('❌ ' + e.message, 'error');
   }
 }
 
-function renderArsip(rows) {
-  const tbody = document.getElementById('arsip-tbody');
-  if (!rows.length) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state">Tidak ada data presensi bulan ini</div></td></tr>`;
-    document.getElementById('stats-row').style.display = 'none';
+async function loadGuru() {
+  if (!sb) return;
+  const { data } = await sb.from('guru').select('*').order('nama');
+  daftarGuru = data || [];
+  document.getElementById('ci-total').textContent = daftarGuru.length;
+  document.getElementById('stat-total').textContent = daftarGuru.length;
+}
+
+// CHECK-IN
+async function prosesCheckin() {
+  const input = document.getElementById('checkin-input');
+  const idpps = input.value.trim();
+  if (!idpps) return;
+  if (!sb) { showFb('gagal','Koneksi Error','Supabase belum terhubung','notfound'); input.value=''; return; }
+
+  const guru = daftarGuru.find(g => String(g.id_pps) === idpps);
+  if (!guru) {
+    showFb('gagal','❌ ID Tidak Dikenali','ID PPS ' + idpps + ' tidak ditemukan dalam data guru','notfound');
+    input.value = '';
+    setTimeout(clearFb, 3500);
     return;
   }
 
-  // Stats
-  const unik = new Set(rows.map(r => r.id_pps)).size;
-  const hadir = rows.filter(r => r.status === 'Hadir').length;
-  document.getElementById('st-total').textContent = rows.length;
-  document.getElementById('st-hadir').textContent = hadir;
-  document.getElementById('st-unik').textContent  = unik;
-  document.getElementById('stats-row').style.display = 'grid';
+  const { data: exist } = await sb.from('absensi').select('id').eq('id_pps', idpps).eq('tanggal', today()).maybeSingle();
+  if (exist) {
+    showFb('gagal', guru.nama, guru.dom + ' · ' + guru.tingkatan, 'sudah');
+    input.value = '';
+    setTimeout(clearFb, 3500);
+    return;
+  }
 
-  tbody.innerHTML = rows.map((r, i) => `
-    <tr>
-      <td style="color:rgba(249,244,236,0.35)">${i+1}</td>
-      <td>${r.nama || '—'}</td>
-      <td style="font-family:monospace;font-size:12px;color:var(--gold-lt)">${r.id_pps}</td>
-      <td>${r.tingkatan || '—'}</td>
-      <td style="color:rgba(249,244,236,0.55);font-size:12px">${formatTanggal(r.tanggal)}<br><span style="font-size:11px">${r.waktu||''}</span></td>
-      <td class="${r.status === 'Hadir' ? 'badge-hadir' : 'badge-alpha'}">${r.status || 'Hadir'}</td>
-    </tr>
+  const { error } = await sb.from('absensi').insert({ id_pps: idpps, tanggal: today(), status: 'H', keterangan: 'Check-in mandiri' });
+  if (error) {
+    showFb('gagal','❌ Gagal Menyimpan', error.message, 'notfound');
+  } else {
+    showFb('sukses', guru.nama, guru.dom + ' · ' + guru.tingkatan, 'hadir');
+    logHariIni.unshift({ nama: guru.nama, dom: guru.dom, waktu: new Date() });
+    renderLog();
+    updateSideStats();
+  }
+
+  input.value = '';
+  setTimeout(() => { clearFb(); document.getElementById('checkin-input').focus(); }, 3500);
+}
+
+function showFb(type, nama, detail, badge) {
+  const fb = document.getElementById('ci-feedback');
+  document.getElementById('fb-nama').textContent = nama;
+  document.getElementById('fb-detail').textContent = detail;
+  const bd = document.getElementById('fb-badge');
+  const labels = { hadir:'✅ Hadir tercatat!', sudah:'⚠️ Sudah check-in hari ini', notfound:'❌ Tidak ditemukan' };
+  bd.textContent = labels[badge] || '';
+  bd.className = 'fb-badge ' + badge;
+  fb.className = 'checkin-feedback ' + type;
+}
+
+function clearFb() {
+  const fb = document.getElementById('ci-feedback');
+  fb.className = 'checkin-feedback';
+}
+
+function renderLog() {
+  const el = document.getElementById('log-list');
+  if (logHariIni.length === 0) { el.innerHTML = '<div class="log-empty">Belum ada check-in hari ini</div>'; return; }
+  el.innerHTML = logHariIni.slice(0,10).map(l => `
+    <div class="log-item">
+      <div class="log-av">${l.nama.charAt(0)}</div>
+      <div><div class="log-nama">${l.nama}</div><div class="log-sub">${l.dom} · ${fmtWaktu(l.waktu)}</div></div>
+    </div>
   `).join('');
 }
 
-function formatTanggal(iso) {
-  if (!iso) return '—';
-  const d = new Date(iso + 'T00:00:00');
-  return d.toLocaleDateString('id-ID', { day:'2-digit', month:'short', year:'numeric' });
+async function updateSideStats() {
+  if (!sb) return;
+  const { data } = await sb.from('absensi').select('id').eq('tanggal', today()).eq('status','H');
+  document.getElementById('ci-hadir').textContent = (data||[]).length;
 }
 
-// ─── EXPORT CSV ─────────────────────────────────────────────────────
-function exportCSV() {
-  if (!arsipData.length) { alert('Tidak ada data untuk diekspor.'); return; }
-  const header = ['No','ID PPS','Nama','Tingkatan','Domisili','Tanggal','Waktu','Status'];
-  const rows = arsipData.map((r,i) =>
-    [i+1, r.id_pps, r.nama, r.tingkatan, r.dom, r.tanggal, r.waktu, r.status]
-    .map(v => `"${v??''}"`)
-    .join(',')
-  );
-  const csv = [header.join(','), ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = `presensi_${document.getElementById('fil-bulan').value}_${document.getElementById('fil-tahun').value}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+// ADMIN
+function renderAdmin() {
+  const grid = document.getElementById('admin-grid');
+  if (daftarGuru.length === 0) { grid.innerHTML = '<div class="empty-state" style="padding:40px"><div class="icon">👥</div><p>Upload data guru dulu.</p></div>'; return; }
+  grid.innerHTML = daftarGuru.map((g,i) => `
+    <div class="admin-row">
+      <div class="admin-no">${i+1}</div>
+      <div><div class="admin-nama">${g.nama}</div><div class="admin-sub">${g.id_pps}</div></div>
+      <div class="admin-sub">${g.dom||'—'}</div>
+      <div class="status-toggle">
+        <button class="toggle-btn sel-H" data-s="H" onclick="setS('${g.id_pps}','H',this)">H</button>
+        <button class="toggle-btn" data-s="A" onclick="setS('${g.id_pps}','A',this)">A</button>
+        <button class="toggle-btn" data-s="I" onclick="setS('${g.id_pps}','I',this)">I</button>
+        <button class="toggle-btn" data-s="S" onclick="setS('${g.id_pps}','S',this)">S</button>
+      </div>
+      <input class="ket-input" id="ket-${g.id_pps}" placeholder="Keterangan...">
+    </div>
+  `).join('');
 }
 
-// ─── INIT ───────────────────────────────────────────────────────────
-document.getElementById('pv-tanggal').textContent = todayStr();
+function setS(idpps, s, btn) {
+  btn.closest('.status-toggle').querySelectorAll('.toggle-btn').forEach(b => b.className = 'toggle-btn');
+  btn.className = 'toggle-btn sel-' + s;
+}
+
+async function simpanAdmin() {
+  if (!sb) { showToast('Hubungkan Supabase!','error'); return; }
+  const tanggal = document.getElementById('tgl-admin').value;
+  if (!tanggal) { showToast('Pilih tanggal!','error'); return; }
+  const btn = document.getElementById('btn-admin');
+  btn.disabled = true; btn.innerHTML = '<div class="loading"></div> Menyimpan...';
+  const rows = daftarGuru.map(g => {
+    const sel = g => document.querySelector(`.admin-row .toggle-btn.sel-H[onclick*="${g.id_pps}"], .admin-row .toggle-btn.sel-A[onclick*="${g.id_pps}"], .admin-row .toggle-btn.sel-I[onclick*="${g.id_pps}"], .admin-row .toggle-btn.sel-S[onclick*="${g.id_pps}"]`);
+    const btnEl = document.querySelector(`.admin-row .toggle-btn[class*="sel-"][onclick*="'${g.id_pps}'"]`);
+    const status = btnEl ? btnEl.dataset.s : 'H';
+    const ket = document.getElementById('ket-' + g.id_pps)?.value || '';
+    return { id_pps: g.id_pps, tanggal, status, keterangan: ket };
+  });
+  try {
+    const { error } = await sb.from('absensi').upsert(rows, { onConflict:'id_pps,tanggal' });
+    if (error) throw error;
+    showToast('✅ Absensi ' + rows.length + ' guru tersimpan!', 'success');
+    loadDashboard();
+  } catch(e) {
+    showToast('❌ ' + e.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '💾 Simpan';
+  }
+}
+
+// DASHBOARD
+async function loadDashboard() {
+  if (!sb) return;
+  const tgl = today();
+  const now = new Date();
+  const bulan = now.getMonth()+1, tahun = now.getFullYear();
+  const { data: dHari } = await sb.from('absensi').select('status').eq('tanggal', tgl);
+  document.getElementById('stat-hadir').textContent = (dHari||[]).filter(a=>a.status==='H').length;
+  document.getElementById('stat-alpha').textContent = (dHari||[]).filter(a=>a.status==='A').length;
+  const start = `${tahun}-${String(bulan).padStart(2,'0')}-01`;
+  const end = `${tahun}-${String(bulan).padStart(2,'0')}-31`;
+  const { data: dBln } = await sb.from('absensi').select('status').gte('tanggal',start).lte('tanggal',end);
+  const tot = (dBln||[]).length, hadirBln = (dBln||[]).filter(a=>a.status==='H').length;
+  document.getElementById('stat-persen').textContent = tot > 0 ? Math.round(hadirBln/tot*100)+'%' : '—';
+  const { data: terkini } = await sb.from('absensi').select('*, guru(nama,dom,tingkatan)').order('created_at',{ascending:false}).limit(10);
+  const lbl = {H:'Hadir',A:'Alpha',I:'Izin',S:'Sakit'};
+  const tbody = document.getElementById('tabel-terkini');
+  if (!terkini || !terkini.length) { tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><div class="icon">📭</div><p>Belum ada absensi</p></div></td></tr>'; return; }
+  tbody.innerHTML = terkini.map(a => `<tr><td style="font-weight:600">${a.guru?.nama||a.id_pps}</td><td>${a.guru?.dom||'—'}</td><td>${a.guru?.tingkatan||'—'}</td><td>${a.tanggal}</td><td><span class="badge ${a.status}">${lbl[a.status]||a.status}</span></td><td style="color:var(--abu);font-size:13px">${a.keterangan||'—'}</td></tr>`).join('');
+}
+
+// REKAP
+async function loadRekap() {
+  if (!sb) { showToast('Hubungkan Supabase!','error'); return; }
+  const bulan = document.getElementById('filter-bulan').value;
+  const tahun = document.getElementById('filter-tahun').value;
+  const start = `${tahun}-${String(bulan).padStart(2,'0')}-01`;
+  const end = `${tahun}-${String(bulan).padStart(2,'0')}-31`;
+  const { data, error } = await sb.from('absensi').select('id_pps,status,guru(nama,dom)').gte('tanggal',start).lte('tanggal',end);
+  if (error) { showToast('Gagal: '+error.message,'error'); return; }
+  const map = {};
+  (data||[]).forEach(a => {
+    if (!map[a.id_pps]) map[a.id_pps] = { nama:a.guru?.nama||a.id_pps, dom:a.guru?.dom||'—', H:0,A:0,I:0,S:0 };
+    map[a.id_pps][a.status]++;
+  });
+  const tbody = document.getElementById('tabel-rekap');
+  const rows = Object.entries(map);
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><div class="icon">📊</div><p>Tidak ada data bulan ini</p></div></td></tr>'; return; }
+  tbody.innerHTML = rows.sort((a,b)=>a[1].nama.localeCompare(b[1].nama)).map(([,r],i)=>{
+    const tot=r.H+r.A+r.I+r.S, pct=tot>0?Math.round(r.H/tot*100):0;
+    const warna = pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
+    return `<tr><td>${i+1}</td><td style="font-weight:600">${r.nama}</td><td>${r.dom}</td><td style="color:#2e7d32;font-weight:700">${r.H}</td><td style="color:#c62828;font-weight:700">${r.A}</td><td style="color:#f57f17;font-weight:700">${r.I}</td><td style="color:#1565c0;font-weight:700">${r.S}</td><td style="font-weight:700;color:${warna}">${pct}%</td></tr>`;
+  }).join('');
+}
+
+// GURU
+function renderGuru() {
+  document.getElementById('jumlah-guru').textContent = daftarGuru.length + ' guru terdaftar';
+  const tbody = document.getElementById('tabel-guru');
+  if (!daftarGuru.length) { tbody.innerHTML = '<tr><td colspan="5"><div class="empty-state"><div class="icon">👥</div><p>Belum ada data guru</p></div></td></tr>'; return; }
+  tbody.innerHTML = daftarGuru.map((g,i)=>`<tr><td>${i+1}</td><td><code>${g.id_pps}</code></td><td style="font-weight:600">${g.nama}</td><td>${g.dom||'—'}</td><td>${g.tingkatan||'—'}</td></tr>`).join('');
+}
+
+// UPLOAD
+function previewExcel(input) {
+  const file = input.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const wb = XLSX.read(e.target.result,{type:'array'});
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const json = XLSX.utils.sheet_to_json(ws,{header:1});
+    if (json.length < 2) { showToast('File kosong!','error'); return; }
+    const headers = json[0].map(h=>String(h).toLowerCase().trim());
+    const iId = headers.findIndex(h=>h.includes('idpps')||h.includes('id_pps')||h==='id');
+    const iNm = headers.findIndex(h=>h.includes('nama'));
+    const iDm = headers.findIndex(h=>h.includes('dom'));
+    const iTk = headers.findIndex(h=>h.includes('tingkat'));
+    previewData = [];
+    for (let i=1;i<json.length;i++) {
+      const r=json[i]; if(!r[iNm]) continue;
+      previewData.push({ id_pps:String(r[iId]||'').trim(), nama:String(r[iNm]||'').trim(), dom:String(r[iDm]||'').trim(), tingkatan:String(r[iTk]||'').trim() });
+    }
+    document.getElementById('preview-count').textContent = previewData.length;
+    document.getElementById('preview-body').innerHTML = previewData.map((g,i)=>`<tr><td>${i+1}</td><td><code>${g.id_pps}</code></td><td style="font-weight:600">${g.nama}</td><td>${g.dom}</td><td>${g.tingkatan}</td></tr>`).join('');
+    document.getElementById('preview-container').style.display = 'block';
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+async function importGuru() {
+  if (!sb) { showToast('Hubungkan Supabase!','error'); return; }
+  if (!previewData.length) return;
+  const btn = document.getElementById('btn-import');
+  btn.disabled=true; btn.innerHTML='<div class="loading"></div> Mengimport...';
+  try {
+    const { error } = await sb.from('guru').upsert(previewData,{onConflict:'id_pps'});
+    if (error) throw error;
+    showToast('✅ '+previewData.length+' guru berhasil diimport!','success');
+    await loadGuru();
+    document.getElementById('preview-container').style.display='none';
+    document.getElementById('file-excel').value='';
+    previewData=[];
+  } catch(e) { showToast('❌ '+e.message,'error'); }
+  finally { btn.disabled=false; btn.innerHTML='⬆️ Import ke Supabase'; }
+}
+
+function showToast(msg, type='info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show '+type;
+  setTimeout(()=>t.className='toast', 3500);
+}
 </script>
 </body>
 </html>
