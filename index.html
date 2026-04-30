@@ -581,22 +581,38 @@ function buildBukaSesiForm() {
   `;
 }
 
-function bukaSesi() {
+async function bukaSesi() {
   const hd = parseInt(document.getElementById('inp-hd').value)||1;
   const hm = parseInt(document.getElementById('inp-hm').value)||1;
   const hy = parseInt(document.getElementById('inp-hy').value)||1446;
   if(hd<1||hd>30||hm<1||hm>12||hy<1400){ toast('Tanggal Hijriah tidak valid!','err'); return; }
 
+  const tglMasehi = sesiKey(); // YYYY-MM-DD hari ini
+  const label = hijriLabel(hd, hm, hy);
+
   sesiAktif = {
-    tanggal_key: sesiKey(),        // YYYY-MM-DD masehi hari ini
-    hijri_label: hijriLabel(hd, hm, hy),
+    tanggal_key: tglMasehi,
+    hijri_label: label,
     hijri_day: hd, hijri_month: hm, hijri_year: hy,
     masehi_label: todayMasehi()
   };
   localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
+
+  // Simpan ke tabel kalender_hijriah (upsert by tanggal_masehi)
+  if(sb){
+    const {error} = await sb.from('kalender_hijriah').upsert({
+      tanggal_masehi: tglMasehi,
+      hijri_day: hd,
+      hijri_month: hm,
+      hijri_year: hy,
+      hijri_label: label
+    }, {onConflict:'tanggal_masehi'});
+    if(error) console.warn('Kalender hijriah save error:', error.message);
+  }
+
   renderSesi();
   updateSideStats();
-  toast('✅ Sesi absensi ' + sesiAktif.hijri_label + ' dibuka!', 'suc');
+  toast('✅ Sesi absensi ' + label + ' dibuka!', 'suc');
 }
 
 function tutupSesi() {
@@ -866,80 +882,92 @@ async function loadDashboard(){
 }
 
 // ===== REKAP HIJRIAH KALENDER =====
+// Strategi: ambil tanggal_masehi dari kalender_hijriah untuk bulan yg dipilih,
+// lalu query absensi berdasarkan tanggal_masehi tsb.
 async function loadRekap(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
   const hTahun = parseInt(document.getElementById('f-tahun-hijri').value);
   const bulanLabel = BLN_H[hBulan] + ' ' + hTahun + ' H';
-
-  // Cari semua absensi yang punya hijri_label mengandung bulan ini
-  // Format: "dd BulanNama YYYY"
-  const namaBulan = BLN_H[hBulan];
-  document.getElementById('rekap-info').textContent = 'Memuat rekap ' + bulanLabel + '...';
-
-  // Ambil semua absensi, filter di client berdasarkan hijri_label
-  const {data, error} = await sb.from('absensi')
-    .select('id_pps,status,tanggal,hijri_label,guru(nama,dom,tingkatan)')
-    .order('tanggal');
-  if(error){ toast('Gagal: '+error.message,'err'); return; }
-
-  // Filter hanya record bulan Hijriah yang dipilih
-  const records = (data||[]).filter(a => {
-    if(!a.hijri_label) return false;
-    const parts = a.hijri_label.split(' ');
-    return parts[1]===namaBulan && parts[2]===String(hTahun);
-  });
-
-  // Kumpulkan semua tanggal Hijriah yang ada
-  const tglSet = new Set();
-  records.forEach(a => tglSet.add(a.hijri_label));
-  const tglArr = Array.from(tglSet).sort((a,b)=>{
-    const da=parseInt(a.split(' ')[0]), db=parseInt(b.split(' ')[0]);
-    return da-db;
-  });
-
-  // Map: id_pps → { nama, dom, tingkatan, tgl→status }
-  const map = {};
-  records.forEach(a => {
-    if(!map[a.id_pps]) map[a.id_pps]={
-      nama: a.guru?.nama||a.id_pps,
-      dom: a.guru?.dom||'—',
-      tingkatan: a.guru?.tingkatan||'—',
-      tgl:{}
-    };
-    map[a.id_pps].tgl[a.hijri_label] = a.status;
-  });
-
   const info = document.getElementById('rekap-info');
   const thead = document.getElementById('thead-rekap');
   const tb = document.getElementById('tb-rekap');
+  info.textContent = 'Memuat ' + bulanLabel + '...';
+  thead.innerHTML=''; tb.innerHTML='';
 
-  if(!tglArr.length){
-    info.textContent = 'Tidak ada data untuk ' + bulanLabel;
-    thead.innerHTML='';
-    tb.innerHTML='<tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Belum ada absensi bulan ' + bulanLabel + '</p></div></td></tr>';
+  // Step 1: ambil semua hari di bulan Hijriah ini dari kalender_hijriah
+  const {data:kalData, error:kalErr} = await sb
+    .from('kalender_hijriah')
+    .select('tanggal_masehi,hijri_day,hijri_label')
+    .eq('hijri_month', hBulan)
+    .eq('hijri_year', hTahun)
+    .order('tanggal_masehi');
+
+  if(kalErr){ toast('Gagal ambil kalender: '+kalErr.message,'err'); return; }
+
+  if(!kalData||!kalData.length){
+    info.textContent = 'Belum ada sesi di bulan ' + bulanLabel;
+    tb.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="ic">📅</div><p>Belum ada sesi absensi di bulan ' + bulanLabel + '</p></div></td></tr>';
     return;
   }
 
-  info.textContent = bulanLabel + ' · ' + tglArr.length + ' hari · ' + Object.keys(map).length + ' guru';
+  // Step 2: ambil absensi untuk semua tanggal Masehi di bulan ini
+  const tglMasehiArr = kalData.map(k => k.tanggal_masehi);
+  const {data:absenData, error:absErr} = await sb
+    .from('absensi')
+    .select('id_pps,status,tanggal,guru(nama,dom,tingkatan)')
+    .in('tanggal', tglMasehiArr)
+    .order('tanggal');
 
-  // Header: #, Nama, Dom, Tingkat, [tgl1..tglN], H, A, I, S, %
-  const tglHeaders = tglArr.map(t=>`<th class="kal-head-tgl">${t.split(' ')[0]}</th>`).join('');
+  if(absErr){ toast('Gagal ambil absensi: '+absErr.message,'err'); return; }
+
+  // Step 3: buat map tanggal_masehi → hijri_label
+  const tglToHijri = {};
+  kalData.forEach(k => { tglToHijri[k.tanggal_masehi] = k.hijri_label; });
+
+  // Step 4: susun data per guru
+  const map = {};
+  // Pastikan semua guru dari daftarGuru masuk map
+  daftarGuru.forEach(g => {
+    map[g.id_pps] = {
+      nama: g.nama, dom: g.dom||'—', tingkatan: g.tingkatan||'—', tgl:{}
+    };
+  });
+  // Isi status dari absensi
+  (absenData||[]).forEach(a => {
+    const hl = tglToHijri[a.tanggal];
+    if(!hl) return;
+    if(!map[a.id_pps]) map[a.id_pps]={
+      nama:a.guru?.nama||a.id_pps, dom:a.guru?.dom||'—', tingkatan:a.guru?.tingkatan||'—', tgl:{}
+    };
+    map[a.id_pps].tgl[hl] = a.status;
+  });
+
+  // Step 5: daftar hari (kolom) — urutkan berdasarkan hijri_day
+  const hariArr = kalData.map(k => k.hijri_label); // sudah terurut dari query
+
+  info.textContent = bulanLabel + ' · ' + hariArr.length + ' hari masuk · ' + Object.keys(map).length + ' guru';
+
+  // Step 6: render header
+  const tglHeaders = hariArr.map(h => `<th class="kal-head-tgl" title="${h}">${h.split(' ')[0]}</th>`).join('');
   thead.innerHTML = `<tr>
-    <th>#</th><th>Nama Guru</th><th>Dom</th><th>Tingkat</th>
+    <th>#</th><th style="min-width:140px">Nama Guru</th><th>Dom</th><th>Tingkat</th>
     ${tglHeaders}
-    <th>H</th><th>A</th><th>I</th><th>S</th><th>%</th>
+    <th style="color:#2e7d32">H</th>
+    <th style="color:#c62828">A</th>
+    <th style="color:#f57f17">I</th>
+    <th style="color:#1565c0">S</th>
+    <th>%</th>
   </tr>`;
 
+  // Step 7: render baris guru
   const rows = Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
-  const warna = {H:'#e8f5e9',A:'#fce4ec',I:'#fff8e1',S:'#e3f2fd'};
-  const wtext = {H:'#2e7d32',A:'#c62828',I:'#f57f17',S:'#1565c0'};
 
-  tb.innerHTML = rows.map(([,r],i)=>{
-    const kalCells = tglArr.map(t=>{
-      const st = r.tgl[t];
-      if(!st) return `<td style="text-align:center"><span class="kal-cell kosong">·</span></td>`;
-      return `<td style="text-align:center"><span class="kal-cell ${st}" title="${t}: ${st}">${st}</span></td>`;
+  tb.innerHTML = rows.map(([idpps,r],i)=>{
+    const kalCells = hariArr.map(h=>{
+      const st = r.tgl[h];
+      if(!st) return `<td style="text-align:center"><span class="kal-cell kosong" title="${h}">·</span></td>`;
+      return `<td style="text-align:center"><span class="kal-cell ${st}" title="${h}: ${st}">${st}</span></td>`;
     }).join('');
     const H=Object.values(r.tgl).filter(v=>v==='H').length;
     const A=Object.values(r.tgl).filter(v=>v==='A').length;
