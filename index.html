@@ -233,18 +233,7 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 
   <div class="content">
 
-    <!-- CONFIG -->
-    <div class="cfg" id="cfg-card">
-      <div>
-        <label>Supabase URL</label>
-        <input type="text" id="sb-url" placeholder="https://xxxx.supabase.co">
-      </div>
-      <div>
-        <label>Publishable / Anon Key</label>
-        <input type="text" id="sb-key" placeholder="sb_publishable_...">
-      </div>
-      <button class="btn-con" onclick="connect()">🔗 Hubungkan</button>
-    </div>
+
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
@@ -421,6 +410,10 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== SUPABASE CONFIG =====
+const SB_URL = 'https://rttcqjfvpcpdxodfwzeo.supabase.co';
+const SB_KEY = 'sb_publishable_SNcfatzW1jm2WS6MZSpg3Q_8LPA2Og_';
+
 // ===== STATE =====
 let sb = null, daftarGuru = [], prevData = [], logHariIni = [];
 let statusHariIni = {}; // { id_pps: 'H'|'A'|'I'|'S' } per hari
@@ -445,8 +438,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('f-tahun').value = now.getFullYear();
   setInterval(()=>{ document.getElementById('ci-jam').textContent = fmtJam(new Date()); }, 1000);
 
-  const url = localStorage.getItem('sb_url'), key = localStorage.getItem('sb_key');
-  if(url && key){ document.getElementById('sb-url').value=url; document.getElementById('sb-key').value=key; connect(true); }
+  connect(true);
 });
 
 // ===== NAVIGASI =====
@@ -465,13 +457,11 @@ function go(nama, btn){
 
 // ===== SUPABASE =====
 async function connect(silent=false){
-  const url=document.getElementById('sb-url').value.trim(), key=document.getElementById('sb-key').value.trim();
-  if(!url||!key){ toast('Isi URL dan Key!','err'); return; }
+  const url=SB_URL, key=SB_KEY;
   try {
     const {createClient}=supabase; sb=createClient(url,key);
     const {error}=await sb.from('guru').select('count',{count:'exact',head:true});
     if(error) throw error;
-    localStorage.setItem('sb_url',url); localStorage.setItem('sb_key',key);
     document.getElementById('st-badge').className='st-badge ok';
     document.getElementById('st-txt').textContent='Terhubung';
     document.getElementById('cfg-card').style.display='none';
