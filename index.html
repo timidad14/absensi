@@ -742,15 +742,20 @@ function previewExcel(input){
     const ws=wb.Sheets[wb.SheetNames[0]];
     const json=XLSX.utils.sheet_to_json(ws,{header:1});
     if(json.length<2){ toast('File kosong!','err'); return; }
-    const headers=json[0].map(h=>String(h).toLowerCase().trim());
-    const iId=headers.findIndex(h=>h.includes('idpps')||h.includes('id_pps')||h==='id');
+    // Normalisasi header: lowercase + hapus semua spasi
+    const headers=json[0].map(h=>String(h).toLowerCase().replace(/\s+/g,'').trim());
+    // "ID PPS" → "idpps", "id_pps" → "idpps", "Tingkat"/"tingkatan" → cocok
+    const iId=headers.findIndex(h=>h.includes('idpps')||h.includes('id_pps')||h==='id'||h==='noid'||h==='nopps');
     const iNm=headers.findIndex(h=>h.includes('nama'));
     const iDm=headers.findIndex(h=>h.includes('dom'));
     const iTk=headers.findIndex(h=>h.includes('tingkat'));
     prevData=[];
     for(let i=1;i<json.length;i++){
-      const r=json[i]; if(!r[iNm]) continue;
-      prevData.push({id_pps:String(r[iId]||'').trim(),nama:String(r[iNm]||'').trim(),dom:String(r[iDm]||'').trim(),tingkatan:String(r[iTk]||'').trim()});
+      const r=json[i];
+      if(!r[iNm]) continue;
+      const idVal=String(r[iId]!==undefined&&r[iId]!==null?r[iId]:'').trim();
+      if(!idVal) continue; // skip baris tanpa ID PPS
+      prevData.push({id_pps:idVal,nama:String(r[iNm]||'').trim(),dom:String(r[iDm]!==undefined?r[iDm]:'').trim(),tingkatan:String(r[iTk]!==undefined?r[iTk]:'').trim()});
     }
     document.getElementById('prev-count').textContent=prevData.length;
     document.getElementById('prev-body').innerHTML=prevData.map((g,i)=>`<tr><td>${i+1}</td><td><code>${g.id_pps}</code></td><td style="font-weight:600">${g.nama}</td><td>${g.dom}</td><td>${g.tingkatan}</td></tr>`).join('');
@@ -763,11 +768,20 @@ async function importGuru(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   if(!prevData.length) return;
   const btn=document.getElementById('btn-import');
-  btn.disabled=true; btn.innerHTML='<div class="loading"></div> Mengimport...';
+  btn.disabled=true;
+  // Import per batch 50 supaya tidak error 500
+  const BATCH=50;
+  let sukses=0, gagal=0;
   try {
-    const {error}=await sb.from('guru').upsert(prevData,{onConflict:'id_pps'});
-    if(error) throw error;
-    toast('✅ '+prevData.length+' guru berhasil diimport!','suc');
+    for(let i=0;i<prevData.length;i+=BATCH){
+      const batch=prevData.slice(i,i+BATCH);
+      btn.innerHTML='<div class="loading"></div> Import '+(i+batch.length)+'/'+prevData.length+'...';
+      const {error}=await sb.from('guru').upsert(batch,{onConflict:'id_pps'});
+      if(error){ gagal+=batch.length; console.error('Batch error:',error); }
+      else sukses+=batch.length;
+    }
+    if(gagal>0) toast('⚠️ '+sukses+' berhasil, '+gagal+' gagal!','err');
+    else toast('✅ '+sukses+' guru berhasil diimport!','suc');
     await loadGuru();
     document.getElementById('prev-wrap').style.display='none';
     document.getElementById('file-excel').value=''; prevData=[];
