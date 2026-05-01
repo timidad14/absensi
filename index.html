@@ -46,15 +46,6 @@ body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--krem);color:#1a
 .content{padding:22px 26px;flex:1}
 .page{display:none}.page.active{display:block}
 
-/* CONFIG */
-.cfg{background:var(--hijau-tua);border-radius:12px;padding:18px 22px;margin-bottom:20px;display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap}
-.cfg label{color:rgba(255,255,255,.55);font-size:10.5px;font-weight:700;letter-spacing:1px;text-transform:uppercase;display:block;margin-bottom:5px}
-.cfg input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:8px 13px;color:#fff;font-size:12.5px;width:280px;outline:none;font-family:monospace}
-.cfg input:focus{border-color:var(--emas)}
-.cfg input::placeholder{color:rgba(255,255,255,.28)}
-.btn-con{background:var(--emas);color:var(--hijau-tua);border:none;padding:9px 20px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer}
-.btn-con:hover{background:var(--emas-muda)}
-
 /* CARD */
 .card{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:18px}
 .ch{padding:14px 18px;border-bottom:1px solid #f0ebe0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
@@ -129,78 +120,12 @@ tr:hover td{background:#fdf8f0}
 .log-sb{font-size:11px;color:var(--abu);margin-top:1px}
 .log-empty{padding:18px;text-align:center;color:var(--abu);font-size:12.5px}
 
-/* ADMIN KOREKSI — SMART */
-.admin-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
-.search-box{position:relative;margin-bottom:14px}
-.search-box input{width:100%;border:1.5px solid #ddd;border-radius:10px;padding:11px 16px 11px 40px;font-size:13.5px;outline:none;font-family:inherit;background:#fff;transition:border-color .2s}
-.search-box input:focus{border-color:var(--hijau-muda)}
-.search-box .ic-search{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--abu);font-size:16px}
-.guru-list{max-height:460px;overflow-y:auto;border:1px solid var(--border);border-radius:10px;background:#fff}
-.guru-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #f5f0e8;cursor:pointer;transition:background .15s;gap:10px}
-.guru-item:last-child{border-bottom:none}
-.guru-item:hover{background:#fdf8f0}
-.guru-item.selected{background:#e8f5e9}
-.gi-info .gi-nm{font-size:13px;font-weight:600;color:var(--hijau-tua)}
-.gi-info .gi-sub{font-size:11px;color:var(--abu);margin-top:1px}
-.gi-status{display:flex;gap:4px}
-.gs-btn{padding:4px 9px;border-radius:5px;border:1.5px solid #ddd;background:#fff;font-size:11px;font-weight:700;cursor:pointer;transition:all .12s}
-.gs-btn:hover{border-color:#aaa}
-.gs-btn.on-H{background:var(--hijau);border-color:var(--hijau);color:#fff}
-.gs-btn.on-A{background:var(--merah);border-color:var(--merah);color:#fff}
-.gs-btn.on-I{background:var(--kuning);border-color:var(--kuning);color:#fff}
-.gs-btn.on-S{background:var(--biru);border-color:var(--biru);color:#fff}
-.admin-right{position:sticky;top:80px}
-.summary-box{background:var(--hijau-tua);border-radius:12px;padding:18px 20px;margin-bottom:14px;color:#fff}
-.sum-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:12px}
-.sum-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.08)}
-.sum-row:last-child{border-bottom:none}
-.sum-label{font-size:13px;color:rgba(255,255,255,.75)}
-.sum-val{font-size:16px;font-weight:700}
-.sum-val.h{color:#a5d6a7}
-.sum-val.a{color:#ef9a9a}
-.sum-val.i{color:#ffe082}
-.sum-val.s{color:#90caf9}
-.sum-val.bl{color:rgba(255,255,255,.5)}
-.info-box{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:11px 15px;font-size:12.5px;color:#795548;margin-bottom:14px;line-height:1.5}
-.btn-tutup{width:100%;background:var(--merah);color:#fff;border:none;padding:11px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:all .2s}
-.btn-tutup:hover{background:#a93226}
-.btn-simpan-admin{width:100%;background:var(--hijau);color:#fff;border:none;padding:11px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all .2s}
-.btn-simpan-admin:hover{background:var(--hijau-muda)}
-
-/* STATUS HARI INI */
-.hari-wrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:18px}
-.hari-card{background:#fff;border-radius:10px;border:1px solid var(--border);padding:14px 16px}
-.hari-card h4{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--abu);margin-bottom:10px}
-.hari-nama{font-size:12.5px;padding:5px 0;border-bottom:1px solid #f5f0e8;display:flex;justify-content:space-between}
-.hari-nama:last-child{border-bottom:none}
-
-/* REKAP */
-.filter-bar{display:flex;gap:9px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
-.filter-bar select,.filter-bar input[type=number]{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:12.5px;outline:none;font-family:inherit;background:#fff}
-
-/* UPLOAD */
-.up-zone{border:2px dashed var(--emas);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,168,76,.04)}
-.up-zone:hover{background:rgba(201,168,76,.09);border-color:var(--hijau)}
-.up-zone .ic{font-size:40px;margin-bottom:12px}
-.up-zone h3{font-size:14.5px;color:var(--hijau-tua);margin-bottom:5px}
-.up-zone p{font-size:12.5px;color:var(--abu)}
-#file-excel{display:none}
-
 /* BUTTONS */
 .btn{padding:8px 18px;border-radius:8px;border:none;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .18s;font-family:inherit;display:inline-flex;align-items:center;gap:6px}
 .btn-g{background:var(--hijau);color:#fff}.btn-g:hover{background:var(--hijau-muda);transform:translateY(-1px)}
 .btn-g:disabled{background:#ccc;cursor:not-allowed;transform:none}
 .btn-e{background:var(--emas);color:var(--hijau-tua)}.btn-e:hover{background:var(--emas-muda)}
 .btn-r{background:var(--merah);color:#fff}
-
-/* UTIL */
-.loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.toast{position:fixed;bottom:22px;right:22px;background:var(--hijau-tua);color:#fff;padding:12px 17px;border-radius:10px;font-size:12.5px;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;border-left:4px solid var(--emas)}
-.toast.show{transform:translateY(0);opacity:1}
-.toast.err{border-left-color:var(--merah)}
-.toast.suc{border-left-color:#43a047}
-code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-family:monospace}
 
 /* SESI HIJRIAH */
 .sesi-box{background:var(--hijau-tua);border-radius:14px;padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
@@ -224,21 +149,97 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 .select-hijri option{background:#1a3a2a;color:#fff}
 .select-hijri:focus{border-color:var(--emas)}
 
-/* REKAP KALENDER */
-.rekap-wrap{overflow-x:auto}
-.tbl-rekap-kal{min-width:900px}
-.tbl-rekap-kal th{padding:7px 8px;font-size:10px;white-space:nowrap}
-.tbl-rekap-kal td{padding:7px 8px;font-size:12px;white-space:nowrap}
-.kal-cell{width:28px;height:24px;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;cursor:default}
-.kal-cell.H{background:#e8f5e9;color:#2e7d32}
-.kal-cell.A{background:#fce4ec;color:#c62828}
-.kal-cell.I{background:#fff8e1;color:#f57f17}
-.kal-cell.S{background:#e3f2fd;color:#1565c0}
-.kal-cell.kosong{background:#f5f5f5;color:#ccc}
-.kal-head-tgl{font-size:9.5px;color:var(--abu);text-align:center;min-width:28px}
-.filter-hijri{display:flex;gap:9px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
-.filter-hijri select,.filter-hijri input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:12.5px;outline:none;font-family:inherit;background:#fff}
+/* =============================================
+   REKAP KALENDER — BARU (versi monitor penuh)
+   ============================================= */
+.rekap-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 18px;border-bottom:1px solid var(--border);background:#fff}
+.rekap-toolbar select,.rekap-toolbar input[type=number]{border:1.5px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;background:#fff;color:#1a1a1a}
+.rekap-judul{font-family:'Amiri',serif;color:var(--hijau-tua);font-size:18px;font-weight:700;padding:10px 18px 0;text-align:center}
+.rekap-sub{text-align:center;font-size:11.5px;color:var(--abu);padding-bottom:10px}
 
+/* Tabel rekap scroll horizontal */
+.rekap-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl-rekap{border-collapse:separate;border-spacing:0;min-width:700px;width:100%}
+
+/* Sticky kolom kiri */
+.tbl-rekap .col-no{width:40px;min-width:40px}
+.tbl-rekap .col-idpps{min-width:90px}
+.tbl-rekap .col-nama{min-width:160px}
+.tbl-rekap .col-dom{min-width:55px}
+.tbl-rekap .col-tk{min-width:80px}
+
+/* Header baris pertama: angka tanggal Hijriah */
+.rk-th-hari{background:var(--hijau-tua);color:#fff;text-align:center;padding:7px 4px;font-size:11px;font-weight:700;min-width:34px;border-right:1px solid rgba(255,255,255,.1)}
+.rk-th-hari:last-child{border-right:none}
+/* Header baris kedua: nama hari (Sabtu, Ahad, dst) */
+.rk-th-namahari{background:#1e4535;color:rgba(255,255,255,.6);text-align:center;padding:4px 4px 7px;font-size:9.5px;font-weight:600;letter-spacing:.5px;min-width:34px;border-right:1px solid rgba(255,255,255,.08);border-bottom:2px solid var(--emas)}
+.rk-th-namahari:last-child{border-right:none}
+
+/* Header kolom kiri (NO, IDPPS, NAMA, DOM, TINGKAT) */
+.rk-th-kiri{background:var(--krem);color:var(--abu);font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:8px 10px;border-bottom:2px solid var(--emas);text-align:left;white-space:nowrap;vertical-align:bottom}
+.rk-th-kiri.center{text-align:center}
+
+/* Header kolom rekap (H/A/I/S/%) */
+.rk-th-stat{background:var(--krem);font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:8px 6px;border-bottom:2px solid var(--emas);text-align:center;white-space:nowrap;vertical-align:bottom}
+
+/* Baris data */
+.tbl-rekap tbody tr:hover td{background:#fdf8f0}
+.tbl-rekap tbody tr:last-child td{border-bottom:none}
+.rk-td{padding:7px 10px;font-size:12.5px;border-bottom:1px solid #f0ebe0;vertical-align:middle;white-space:nowrap}
+.rk-td.nama{font-weight:600}
+.rk-td.center{text-align:center}
+.rk-td.code{font-family:monospace;font-size:11.5px;color:var(--abu)}
+
+/* Sel status kehadiran */
+.rk-cell{display:inline-flex;align-items:center;justify-content:center;width:30px;height:24px;border-radius:5px;font-size:10.5px;font-weight:700;cursor:default}
+.rk-cell.H{background:#e8f5e9;color:#2e7d32}
+.rk-cell.A{background:#fce4ec;color:#c62828}
+.rk-cell.I{background:#fff8e1;color:#f57f17}
+.rk-cell.S{background:#e3f2fd;color:#1565c0}
+.rk-cell.kosong{background:#f5f5f5;color:#ccc}
+
+/* Kolom rekap angka */
+.rk-td-stat{padding:7px 6px;text-align:center;font-size:12.5px;font-weight:700;border-bottom:1px solid #f0ebe0;white-space:nowrap}
+.rk-td-stat.H{color:#2e7d32}
+.rk-td-stat.A{color:#c62828}
+.rk-td-stat.I{color:#f57f17}
+.rk-td-stat.S{color:#1565c0}
+
+/* Bar persen */
+.pct-wrap{display:flex;align-items:center;gap:5px;justify-content:center;min-width:60px}
+.pct-bar{height:6px;border-radius:3px;min-width:3px;max-width:40px;transition:width .3s}
+.pct-num{font-size:11px;font-weight:700;white-space:nowrap}
+
+/* Legenda */
+.rekap-legend{display:flex;align-items:center;gap:12px;padding:10px 18px;border-top:1px solid var(--border);flex-wrap:wrap}
+.leg-item{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--abu)}
+.leg-dot{width:14px;height:14px;border-radius:3px;display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+
+/* Filter cari guru di rekap */
+.rekap-search{position:relative;margin-left:auto}
+.rekap-search input{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px 7px 32px;font-size:12.5px;outline:none;font-family:inherit;background:#fff;width:180px}
+.rekap-search input:focus{border-color:var(--hijau-muda)}
+.rekap-search .si{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--abu);font-size:14px}
+
+/* UPLOAD */
+.up-zone{border:2px dashed var(--emas);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:rgba(201,168,76,.04)}
+.up-zone:hover{background:rgba(201,168,76,.09);border-color:var(--hijau)}
+.up-zone .ic{font-size:40px;margin-bottom:12px}
+.up-zone h3{font-size:14.5px;color:var(--hijau-tua);margin-bottom:5px}
+.up-zone p{font-size:12.5px;color:var(--abu)}
+#file-excel{display:none}
+
+/* UTIL */
+.loading{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:22px;right:22px;background:var(--hijau-tua);color:#fff;padding:12px 17px;border-radius:10px;font-size:12.5px;font-weight:600;z-index:9999;transform:translateY(80px);opacity:0;transition:all .3s;max-width:300px;border-left:4px solid var(--emas)}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.err{border-left-color:var(--merah)}
+.toast.suc{border-left-color:#43a047}
+code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-family:monospace}
+.info-box{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:11px 15px;font-size:12.5px;color:#795548;line-height:1.5}
+.filter-bar{display:flex;gap:9px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.filter-bar select,.filter-bar input[type=number]{border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:12.5px;outline:none;font-family:inherit;background:#fff}
 </style>
 </head>
 <body>
@@ -252,12 +253,11 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
   <nav class="sb-nav">
     <button class="ni on" onclick="go('dashboard',this)"><span class="ic">📊</span>Dashboard</button>
     <button class="ni" onclick="go('checkin',this)"><span class="ic">🖥️</span>Layar Check-in</button>
-    <button class="ni" onclick="go('admin',this)"><span class="ic">✏️</span>Koreksi Admin</button>
     <button class="ni" onclick="go('rekap',this)"><span class="ic">📅</span>Rekap Bulanan</button>
     <button class="ni" onclick="go('guru',this)"><span class="ic">👤</span>Data Guru</button>
     <button class="ni" onclick="go('upload',this)"><span class="ic">📤</span>Upload Excel</button>
   </nav>
-  <div class="sb-ft">Madrasah Tarbiyah Idadiyah<br>al-Miftah · v3.0</div>
+  <div class="sb-ft">Madrasah Tarbiyah Idadiyah<br>al-Miftah · v4.0</div>
 </div>
 
 <div class="main">
@@ -270,8 +270,6 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
   </div>
 
   <div class="content">
-
-
 
     <!-- DASHBOARD -->
     <div class="page active" id="page-dashboard">
@@ -295,16 +293,13 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 
     <!-- CHECK-IN -->
     <div class="page" id="page-checkin">
-      <!-- SESI BOX -->
       <div class="sesi-box" id="sesi-box">
         <div class="sesi-info">
           <div class="sesi-label">Sesi Absensi Hari Ini</div>
           <div class="sesi-tgl" id="sesi-tgl-hijri">Belum ada sesi aktif</div>
           <div class="sesi-tgl-m" id="sesi-tgl-masehi">—</div>
         </div>
-        <div class="sesi-actions" id="sesi-actions">
-          <!-- Isi via JS -->
-        </div>
+        <div class="sesi-actions" id="sesi-actions"></div>
       </div>
       <div class="ci-wrap">
         <div class="ci-box">
@@ -334,89 +329,49 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
       </div>
     </div>
 
-    <!-- ADMIN KOREKSI -->
-    <div class="page" id="page-admin">
-      <div class="admin-wrap">
-        <!-- KIRI: DAFTAR GURU -->
-        <div>
-          <div class="card" style="margin-bottom:0">
-            <div class="ch">
-              <div>
-                <div class="ct">✏️ Koreksi Status Guru</div>
-                <div class="cs">Klik guru → pilih status. Hanya yang perlu dikoreksi.</div>
-              </div>
-              <input type="date" id="tgl-admin" style="border:1.5px solid #ddd;border-radius:8px;padding:7px 12px;font-size:12.5px;outline:none;font-family:inherit;background:#fff">
-            </div>
-            <div style="padding:12px 14px;border-bottom:1px solid var(--border)">
-              <div class="search-box">
-                <span class="ic-search">🔍</span>
-                <input type="text" id="search-guru" placeholder="Cari nama atau ID PPS..." oninput="filterGuru()">
-              </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap">
-                <button class="btn btn-g" style="font-size:11px;padding:5px 10px" onclick="filterByStatus('all')">Semua</button>
-                <button class="btn" style="font-size:11px;padding:5px 10px;background:#e8f5e9;color:#2e7d32" onclick="filterByStatus('H')">✅ Hadir</button>
-                <button class="btn" style="font-size:11px;padding:5px 10px;background:#fce4ec;color:#c62828" onclick="filterByStatus('A')">❌ Alpha</button>
-                <button class="btn" style="font-size:11px;padding:5px 10px;background:#fff8e1;color:#f57f17" onclick="filterByStatus('I')">📋 Izin</button>
-                <button class="btn" style="font-size:11px;padding:5px 10px;background:#e3f2fd;color:#1565c0" onclick="filterByStatus('S')">🏥 Sakit</button>
-                <button class="btn" style="font-size:11px;padding:5px 10px;background:#f5f5f5;color:#666" onclick="filterByStatus('none')">⬜ Belum</button>
-              </div>
-            </div>
-            <div class="guru-list" id="guru-list">
-              <div class="empty" style="padding:30px"><div class="ic">👥</div><p>Upload data guru dulu</p></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- KANAN: SUMMARY & AKSI -->
-        <div class="admin-right">
-          <div class="info-box">
-            💡 <strong>Cara cepat:</strong> Guru yang check-in mandiri sudah otomatis <strong>Hadir</strong>. Cukup koreksi yang Alpha/Izin/Sakit saja. Gunakan filter untuk mempercepat.
-          </div>
-          <div class="summary-box">
-            <div class="sum-title">Ringkasan Hari Ini</div>
-            <div class="sum-row"><span class="sum-label">✅ Hadir</span><span class="sum-val h" id="adm-h">0</span></div>
-            <div class="sum-row"><span class="sum-label">❌ Alpha</span><span class="sum-val a" id="adm-a">0</span></div>
-            <div class="sum-row"><span class="sum-label">📋 Izin</span><span class="sum-val i" id="adm-i">0</span></div>
-            <div class="sum-row"><span class="sum-label">🏥 Sakit</span><span class="sum-val s" id="adm-s">0</span></div>
-            <div class="sum-row"><span class="sum-label">⬜ Belum Ada Status</span><span class="sum-val bl" id="adm-bl">0</span></div>
-          </div>
-          <button class="btn-tutup" onclick="tutupAbsensi()">
-            🔒 Tutup Absensi Hari Ini<br>
-            <span style="font-size:11px;font-weight:400;opacity:.8">(Yang belum → otomatis Alpha)</span>
-          </button>
-          <button class="btn-simpan-admin" onclick="simpanKoreksi()" id="btn-koreksi">
-            💾 Simpan Perubahan
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- REKAP -->
+    <!-- REKAP BULANAN - BARU -->
     <div class="page" id="page-rekap">
-      <div class="card">
-        <div class="ch">
-          <div><div class="ct">📅 Rekap Bulanan</div><div class="cs">Rekapitulasi kehadiran per bulan</div></div>
-        </div>
-        <div style="padding:14px 18px">
-          <div class="filter-hijri">
-            <select id="f-bulan-hijri">
-              <option value="1">Muharram</option><option value="2">Shafar</option>
-              <option value="3">Rabiul Awwal</option><option value="4">Rabiul Akhir</option>
-              <option value="5">Jumadal Ula</option><option value="6">Jumadal Akhirah</option>
-              <option value="7">Rajab</option><option value="8">Syaban</option>
-              <option value="9">Ramadhan</option><option value="10">Syawwal</option>
-              <option value="11">Dzulqadah</option><option value="12">Dzulhijjah</option>
-            </select>
-            <input type="number" id="f-tahun-hijri" value="1446" min="1440" max="1460" style="width:85px">
-            <button class="btn btn-g" onclick="loadRekap()">🔍 Tampilkan</button>
+      <div class="card" style="overflow:visible">
+        <!-- Toolbar filter -->
+        <div class="rekap-toolbar">
+          <select id="f-bulan-hijri">
+            <option value="1">Muharram</option><option value="2">Shafar</option>
+            <option value="3">Rabiul Awwal</option><option value="4">Rabiul Akhir</option>
+            <option value="5">Jumadal Ula</option><option value="6">Jumadal Akhirah</option>
+            <option value="7">Rajab</option><option value="8">Syaban</option>
+            <option value="9">Ramadhan</option><option value="10">Syawwal</option>
+            <option value="11">Dzulqadah</option><option value="12">Dzulhijjah</option>
+          </select>
+          <input type="number" id="f-tahun-hijri" value="1446" min="1440" max="1460" style="width:85px">
+          <button class="btn btn-g" onclick="loadRekap()">🔍 Tampilkan</button>
+          <button class="btn btn-e" onclick="exportRekapExcel()" id="btn-export-rekap" style="display:none">⬇️ Export Excel</button>
+          <div class="rekap-search">
+            <span class="si">🔍</span>
+            <input type="text" id="rekap-cari" placeholder="Cari nama guru..." oninput="filterRekap()">
           </div>
-          <div id="rekap-info" style="font-size:12px;color:var(--abu);margin-bottom:8px"></div>
         </div>
-        <div class="rekap-wrap">
-          <table class="tbl-rekap-kal" id="tbl-rekap-kal">
+
+        <!-- Judul bulan -->
+        <div class="rekap-judul" id="rekap-judul" style="display:none"></div>
+        <div class="rekap-sub" id="rekap-sub"></div>
+
+        <!-- Tabel kalender -->
+        <div class="rekap-scroll" id="rekap-wrap">
+          <table class="tbl-rekap" id="tbl-rekap">
             <thead id="thead-rekap"></thead>
-            <tbody id="tb-rekap"><tr><td colspan="9"><div class="empty"><div class="ic">📊</div><p>Pilih bulan Hijriah lalu klik Tampilkan</p></div></td></tr></tbody>
+            <tbody id="tbody-rekap">
+              <tr><td colspan="9"><div class="empty"><div class="ic">📅</div><p>Pilih bulan Hijriah lalu klik Tampilkan</p></div></td></tr>
+            </tbody>
           </table>
+        </div>
+
+        <!-- Legenda -->
+        <div class="rekap-legend">
+          <div class="leg-item"><div class="leg-dot rk-cell H" style="width:20px;height:16px">H</div> Hadir</div>
+          <div class="leg-item"><div class="leg-dot rk-cell A" style="width:20px;height:16px">A</div> Alpha</div>
+          <div class="leg-item"><div class="leg-dot rk-cell I" style="width:20px;height:16px">I</div> Izin</div>
+          <div class="leg-item"><div class="leg-dot rk-cell S" style="width:20px;height:16px">S</div> Sakit</div>
+          <div class="leg-item"><div class="leg-dot rk-cell kosong" style="width:20px;height:16px">·</div> Tidak ada sesi</div>
         </div>
       </div>
     </div>
@@ -439,7 +394,7 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
       <div class="card">
         <div class="ch"><div><div class="ct">📤 Upload Data Guru via Excel</div><div class="cs">Kolom: idpps · nama · dom · tingkatan</div></div></div>
         <div style="padding:22px">
-          <div class="info-box">ℹ️ Baris pertama = header: <strong>idpps</strong>, <strong>nama</strong>, <strong>dom</strong>, <strong>tingkatan</strong>. Data lama dengan ID yang sama akan diperbarui.</div>
+          <div class="info-box" style="margin-bottom:16px">ℹ️ Baris pertama = header: <strong>idpps</strong>, <strong>nama</strong>, <strong>dom</strong>, <strong>tingkatan</strong>. Data lama dengan ID yang sama akan diperbarui (upsert).</div>
           <div class="up-zone" onclick="document.getElementById('file-excel').click()">
             <div class="ic">📂</div>
             <h3>Klik atau seret file Excel ke sini</h3>
@@ -465,29 +420,27 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 
 <script>
 // ===== SUPABASE CONFIG =====
+// ⚠️ PENTING: Aktifkan Row Level Security (RLS) di semua tabel Supabase Anda!
+// Tabel yang perlu RLS: guru, absensi, kalender_hijriah
+// Key anon ini aman selama RLS dikonfigurasi dengan benar.
 const SB_URL = 'https://rttcqjfvpcpdxodfwzeo.supabase.co';
 const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ0dGNxamZ2cGNwZHhvZGZ3emVvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTAwMjEsImV4cCI6MjA5MzA2NjAyMX0.F3CmOnIgbwRNaUIGs7zO2-HQ0Wln8xqgw0BnhcS3GM8';
 
-// ===== BULAN HIJRIAH =====
+// ===== KONSTANTA =====
 const BLN_H = ['','Muharram','Shafar','Rabiul Awwal','Rabiul Akhir','Jumadal Ula','Jumadal Akhirah','Rajab','Syaban','Ramadhan','Syawwal','Dzulqadah','Dzulhijjah'];
 const BLN_M = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
-const HARI  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const HARI  = ['Ahad','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
 
 // ===== STATE =====
 let sb = null, daftarGuru = [], prevData = [], logHariIni = [];
-let statusHariIni = {};
-let filterStatus = 'all', filterText = '';
-let perubahanAdmin = {};
-
-// Sesi aktif: { tanggal_key, hijri_label, masehi_label }
-// tanggal_key = string "H-dd-mm-yyyy" unik per hari Hijriah
-// disimpan di localStorage agar bertahan refresh
 let sesiAktif = null;
 
+// State rekap untuk filter
+let rekapData = []; // array baris guru yang sudah dirender
+let rekapHariArr = []; // array hari hijriah
+
 // ===== HIJRIAH UTILS =====
-// Konversi Gregorian → Hijriah (algoritma umm al-qura approx)
 function gregorianToHijri(year, month, day) {
-  // Pakai Intl API jika tersedia
   try {
     const d = new Date(year, month-1, day);
     const hParts = new Intl.DateTimeFormat('id-u-ca-islamic-umalqura', {
@@ -510,29 +463,59 @@ function todayHijri() {
   return gregorianToHijri(now.getFullYear(), now.getMonth()+1, now.getDate());
 }
 
-function hijriLabel(hd, hm, hy) {
-  return `${hd} ${BLN_H[hm]} ${hy}`;
-}
-
+function hijriLabel(hd, hm, hy) { return `${hd} ${BLN_H[hm]} ${hy}`; }
 function todayMasehi() {
   const now = new Date();
   return `${HARI[now.getDay()]}, ${now.getDate()} ${BLN_M[now.getMonth()]} ${now.getFullYear()}`;
 }
-
 function today() { return new Date().toISOString().split('T')[0]; }
-function fmtTgl(d){ return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN_M[d.getMonth()]} ${d.getFullYear()}` }
-function fmtJam(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) }
-function fmtWkt(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}) }
+function fmtTgl(d){ return `${HARI[d.getDay()]}, ${d.getDate()} ${BLN_M[d.getMonth()]} ${d.getFullYear()}`; }
+function fmtJam(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); }
+function fmtWkt(d){ return d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'}); }
 
-// Buat tanggal key unik dari input hijriah + tanggal masehi hari ini
-// Format simpan: tanggal Masehi (YYYY-MM-DD) — satu sesi = satu hari Masehi
-function sesiKey() { return today(); }
+// Ambil nama hari dari tanggal masehi string "YYYY-MM-DD"
+function namaHariFromMasehi(tglStr) {
+  const d = new Date(tglStr + 'T00:00:00');
+  return HARI[d.getDay()];
+}
 
 // ===== SESI ABSENSI =====
-function loadSesi() {
+// Sesi disimpan di localStorage (client) + Supabase kalender_hijriah (server)
+// Sesi = satu hari Masehi, dikaitkan ke satu hari Hijriah
+
+function sesiKey() { return today(); }
+
+async function loadSesi() {
+  // Coba ambil dari localStorage dulu
   const saved = localStorage.getItem('sesi_absensi');
   if (saved) {
-    try { sesiAktif = JSON.parse(saved); } catch(e) { sesiAktif = null; }
+    try {
+      const parsed = JSON.parse(saved);
+      // Validasi: sesi harus untuk hari ini
+      if (parsed.tanggal_key === today()) {
+        sesiAktif = parsed;
+      } else {
+        localStorage.removeItem('sesi_absensi');
+        sesiAktif = null;
+      }
+    } catch(e) { sesiAktif = null; }
+  }
+
+  // Sinkron dengan Supabase: cek apakah ada sesi untuk hari ini
+  if (!sesiAktif && sb) {
+    const {data} = await sb.from('kalender_hijriah')
+      .select('*').eq('tanggal_masehi', today()).maybeSingle();
+    if (data) {
+      sesiAktif = {
+        tanggal_key: data.tanggal_masehi,
+        hijri_label: data.hijri_label,
+        hijri_day: data.hijri_day,
+        hijri_month: data.hijri_month,
+        hijri_year: data.hijri_year,
+        masehi_label: todayMasehi()
+      };
+      localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
+    }
   }
   renderSesi();
 }
@@ -551,7 +534,6 @@ function renderSesi() {
       <div class="sesi-status buka">🟢 Sesi Aktif</div>
       <button class="btn-sesi btn-tutup-sesi" onclick="tutupSesi()">🔒 Tutup Sesi</button>
     `;
-    // Update topbar
     document.getElementById('tgl-top').textContent = sesiAktif.hijri_label + ' | ' + sesiAktif.masehi_label.split(',')[1]?.trim();
     document.getElementById('ci-tgl').textContent = sesiAktif.hijri_label + ' · ' + sesiAktif.masehi_label;
   } else {
@@ -559,7 +541,6 @@ function renderSesi() {
     tglH.textContent = 'Belum ada sesi aktif';
     tglM.textContent = 'Buka sesi untuk mulai absensi hari ini';
     acts.innerHTML = buildBukaSesiForm();
-    // Isi default dengan konversi otomatis hari ini
     const hh = todayHijri();
     setTimeout(()=>{
       const ed=document.getElementById('inp-hd'), em=document.getElementById('inp-hm'), ey=document.getElementById('inp-hy');
@@ -587,7 +568,7 @@ async function bukaSesi() {
   const hy = parseInt(document.getElementById('inp-hy').value)||1446;
   if(hd<1||hd>30||hm<1||hm>12||hy<1400){ toast('Tanggal Hijriah tidak valid!','err'); return; }
 
-  const tglMasehi = sesiKey(); // YYYY-MM-DD hari ini
+  const tglMasehi = sesiKey();
   const label = hijriLabel(hd, hm, hy);
 
   sesiAktif = {
@@ -598,13 +579,11 @@ async function bukaSesi() {
   };
   localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
 
-  // Simpan ke tabel kalender_hijriah (upsert by tanggal_masehi)
+  // Simpan ke Supabase agar tersinkron di semua device
   if(sb){
     const {error} = await sb.from('kalender_hijriah').upsert({
       tanggal_masehi: tglMasehi,
-      hijri_day: hd,
-      hijri_month: hm,
-      hijri_year: hy,
+      hijri_day: hd, hijri_month: hm, hijri_year: hy,
       hijri_label: label
     }, {onConflict:'tanggal_masehi'});
     if(error) console.warn('Kalender hijriah save error:', error.message);
@@ -616,7 +595,7 @@ async function bukaSesi() {
 }
 
 function tutupSesi() {
-  if(!confirm('Tutup sesi absensi ' + sesiAktif?.hijri_label + '? Guru yang belum check-in bisa dicatat Alpha dulu di Koreksi Admin.')) return;
+  if(!confirm('Tutup sesi absensi ' + sesiAktif?.hijri_label + '?')) return;
   sesiAktif = null;
   localStorage.removeItem('sesi_absensi');
   renderSesi();
@@ -632,15 +611,12 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const now = new Date();
   document.getElementById('tgl-top').textContent = fmtTgl(now);
   document.getElementById('ci-tgl').textContent = fmtTgl(now);
-  document.getElementById('tgl-admin').value = today();
 
-  // Isi filter rekap dengan bulan Hijriah saat ini
   const hh = todayHijri();
   document.getElementById('f-bulan-hijri').value = hh.month;
   document.getElementById('f-tahun-hijri').value = hh.year;
 
   setInterval(()=>{ document.getElementById('ci-jam').textContent = fmtJam(new Date()); }, 1000);
-  loadSesi();
   connect(true);
 });
 
@@ -650,10 +626,9 @@ function go(nama, btn){
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
   document.getElementById('page-'+nama).classList.add('active');
   if(btn) btn.classList.add('on');
-  const tt = {dashboard:'Dashboard',checkin:'Layar Check-in Guru',admin:'Koreksi Admin',rekap:'Rekap Bulanan',guru:'Data Guru',upload:'Upload Data Guru'};
+  const tt = {dashboard:'Dashboard',checkin:'Layar Check-in Guru',rekap:'Rekap Bulanan',guru:'Data Guru',upload:'Upload Data Guru'};
   document.getElementById('page-title').textContent = tt[nama];
   if(nama==='checkin'){ document.getElementById('ci-inp').focus(); updateSideStats(); }
-  if(nama==='admin'){ loadStatusHariIni(); }
   if(nama==='guru') renderGuru();
   if(nama==='dashboard') loadDashboard();
 }
@@ -668,7 +643,10 @@ async function connect(silent=false){
     document.getElementById('st-badge').className='st-badge ok';
     document.getElementById('st-txt').textContent='Terhubung';
     if(!silent) toast('✅ Berhasil terhubung!','suc');
-    await loadGuru(); loadDashboard(); updateSideStats();
+    await loadGuru();
+    await loadSesi();
+    loadDashboard();
+    updateSideStats();
   } catch(e){
     sb=null;
     document.getElementById('st-badge').className='st-badge no';
@@ -680,10 +658,13 @@ async function connect(silent=false){
 
 async function loadGuru(){
   if(!sb) return;
-  const {data}=await sb.from('guru').select('*').order('nama');
+  const {data,error}=await sb.from('guru').select('*').order('nama');
+  if(error){ console.error('loadGuru error:',error.message); return; }
   daftarGuru = data||[];
-  document.getElementById('ci-total').textContent = daftarGuru.length;
-  document.getElementById('s-total').textContent = daftarGuru.length;
+  const el1=document.getElementById('ci-total');
+  const el2=document.getElementById('s-total');
+  if(el1) el1.textContent = daftarGuru.length;
+  if(el2) el2.textContent = daftarGuru.length;
 }
 
 // ===== CHECK-IN =====
@@ -723,13 +704,12 @@ async function doCheckin(){
 }
 
 function showFb(type,nama,detail,badge){
-  const fb=document.getElementById('ci-fb');
   document.getElementById('fb-nm').textContent=nama;
   document.getElementById('fb-dt').textContent=detail;
   const bd=document.getElementById('fb-bd');
   const labels={hadir:'✅ Hadir tercatat!',sudah:'⚠️ Sudah check-in hari ini',notfound:'❌ Tidak ditemukan'};
   bd.textContent=labels[badge]||''; bd.className='fb-bd '+badge;
-  fb.className='ci-fb '+(type==='ok'?'ok':'err');
+  document.getElementById('ci-fb').className='ci-fb '+(type==='ok'?'ok':'err');
 }
 
 function clearFb(){ document.getElementById('ci-fb').className='ci-fb'; }
@@ -754,106 +734,6 @@ async function updateSideStats(){
   document.getElementById('ci-alpha').textContent=belum>0?belum:0;
 }
 
-// ===== ADMIN KOREKSI =====
-async function loadStatusHariIni(){
-  const tgl=document.getElementById('tgl-admin').value||today();
-  statusHariIni={};
-  perubahanAdmin={};
-  if(sb){
-    const {data}=await sb.from('absensi').select('id_pps,status,keterangan').eq('tanggal',tgl);
-    (data||[]).forEach(a=>{ statusHariIni[a.id_pps]={status:a.status,ket:a.keterangan||''}; });
-  }
-  renderGuruList();
-  updateAdminSummary();
-}
-
-document.addEventListener('change', e=>{
-  if(e.target.id==='tgl-admin') loadStatusHariIni();
-});
-
-function renderGuruList(){
-  const el=document.getElementById('guru-list');
-  if(!daftarGuru.length){ el.innerHTML='<div class="empty" style="padding:30px"><div class="ic">👥</div><p>Upload data guru dulu</p></div>'; return; }
-  let list=daftarGuru.filter(g=>{
-    const s=statusHariIni[g.id_pps]?.status||'none';
-    const txtOk=!filterText||(g.nama.toLowerCase().includes(filterText)||String(g.id_pps).includes(filterText));
-    const stOk=filterStatus==='all'||(filterStatus==='none'&&!statusHariIni[g.id_pps])||(filterStatus!=='none'&&s===filterStatus);
-    return txtOk&&stOk;
-  });
-  if(!list.length){ el.innerHTML='<div class="empty" style="padding:30px"><div class="ic">🔍</div><p>Tidak ada guru yang sesuai filter</p></div>'; return; }
-  el.innerHTML=list.map(g=>{
-    const cur=perubahanAdmin[g.id_pps]?.status||statusHariIni[g.id_pps]?.status||'';
-    const sBtns=['H','A','I','S'].map(s=>`<button class="gs-btn${cur===s?' on-'+s:''}" onclick="setAdminStatus('${g.id_pps}','${s}',this)">${s==='H'?'✅':s==='A'?'❌':s==='I'?'📋':'🏥'} ${s}</button>`).join('');
-    return `<div class="guru-item"><div class="gi-info"><div class="gi-nm">${g.nama}</div><div class="gi-sub"><code>${g.id_pps}</code> · ${g.dom||'—'}</div></div><div class="gi-status">${sBtns}</div></div>`;
-  }).join('');
-}
-
-function setAdminStatus(idpps, status, btn){
-  if(!perubahanAdmin[idpps]) perubahanAdmin[idpps]={};
-  perubahanAdmin[idpps].status=status;
-  const row=btn.closest('.gi-status');
-  row.querySelectorAll('.gs-btn').forEach(b=>b.className='gs-btn');
-  btn.className='gs-btn on-'+status;
-  updateAdminSummary();
-}
-
-function updateAdminSummary(){
-  const merged={};
-  daftarGuru.forEach(g=>{
-    const s=perubahanAdmin[g.id_pps]?.status||statusHariIni[g.id_pps]?.status||null;
-    merged[g.id_pps]=s;
-  });
-  const vals=Object.values(merged);
-  document.getElementById('adm-h').textContent=vals.filter(v=>v==='H').length;
-  document.getElementById('adm-a').textContent=vals.filter(v=>v==='A').length;
-  document.getElementById('adm-i').textContent=vals.filter(v=>v==='I').length;
-  document.getElementById('adm-s').textContent=vals.filter(v=>v==='S').length;
-  document.getElementById('adm-bl').textContent=vals.filter(v=>!v).length;
-}
-
-function filterGuru(){
-  filterText=document.getElementById('search-guru').value.toLowerCase().trim();
-  renderGuruList();
-}
-
-function filterByStatus(s){ filterStatus=s; renderGuruList(); }
-
-async function simpanKoreksi(){
-  if(!sb){ toast('Hubungkan Supabase!','err'); return; }
-  const tgl=document.getElementById('tgl-admin').value||today();
-  const perubahan=Object.entries(perubahanAdmin);
-  if(!perubahan.length){ toast('Tidak ada perubahan!','err'); return; }
-  const btn=document.getElementById('btn-koreksi');
-  btn.disabled=true; btn.innerHTML='<div class="loading"></div> Menyimpan...';
-  const rows=perubahan.map(([idpps,val])=>({ id_pps:idpps, tanggal:tgl, status:val.status, keterangan:val.ket||'' }));
-  try {
-    const {error}=await sb.from('absensi').upsert(rows,{onConflict:'id_pps,tanggal'});
-    if(error) throw error;
-    toast('✅ '+rows.length+' perubahan tersimpan!','suc');
-    perubahanAdmin={};
-    await loadStatusHariIni();
-    loadDashboard();
-  } catch(e){ toast('❌ '+e.message,'err'); }
-  finally { btn.disabled=false; btn.innerHTML='💾 Simpan Perubahan'; }
-}
-
-async function tutupAbsensi(){
-  if(!sb){ toast('Hubungkan Supabase!','err'); return; }
-  const tgl=document.getElementById('tgl-admin').value||today();
-  const sudahAbsen=Object.keys(statusHariIni);
-  const belum=daftarGuru.filter(g=>!sudahAbsen.includes(String(g.id_pps)));
-  if(!belum.length){ toast('Semua guru sudah punya status hari ini!','suc'); return; }
-  if(!confirm(`${belum.length} guru belum absen akan otomatis dicatat Alpha. Lanjutkan?`)) return;
-  const rows=belum.map(g=>({ id_pps:g.id_pps, tanggal:tgl, status:'A', keterangan:'Auto-Alpha (tidak check-in)' }));
-  try {
-    const {error}=await sb.from('absensi').upsert(rows,{onConflict:'id_pps,tanggal'});
-    if(error) throw error;
-    toast('✅ '+belum.length+' guru dicatat Alpha!','suc');
-    await loadStatusHariIni();
-    loadDashboard(); updateSideStats();
-  } catch(e){ toast('❌ '+e.message,'err'); }
-}
-
 // ===== DASHBOARD =====
 async function loadDashboard(){
   if(!sb) return;
@@ -862,7 +742,6 @@ async function loadDashboard(){
   document.getElementById('s-hadir').textContent=(dH||[]).filter(a=>a.status==='H').length;
   document.getElementById('s-alpha').textContent=(dH||[]).filter(a=>a.status==='A').length;
 
-  // Persentase: ambil semua data 30 hari terakhir
   const d30 = new Date(); d30.setDate(d30.getDate()-30);
   const {data:dB}=await sb.from('absensi').select('status').gte('tanggal',d30.toISOString().split('T')[0]);
   const tot=(dB||[]).length, hadirB=(dB||[]).filter(a=>a.status==='H').length;
@@ -881,21 +760,25 @@ async function loadDashboard(){
   </tr>`).join('');
 }
 
-// ===== REKAP HIJRIAH KALENDER =====
-// Strategi: ambil tanggal_masehi dari kalender_hijriah untuk bulan yg dipilih,
-// lalu query absensi berdasarkan tanggal_masehi tsb.
+// ===== REKAP BULANAN — KALENDER GRID =====
 async function loadRekap(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
   const hTahun = parseInt(document.getElementById('f-tahun-hijri').value);
   const bulanLabel = BLN_H[hBulan] + ' ' + hTahun + ' H';
-  const info = document.getElementById('rekap-info');
-  const thead = document.getElementById('thead-rekap');
-  const tb = document.getElementById('tb-rekap');
-  info.textContent = 'Memuat ' + bulanLabel + '...';
-  thead.innerHTML=''; tb.innerHTML='';
 
-  // Step 1: ambil semua hari di bulan Hijriah ini dari kalender_hijriah
+  const thead = document.getElementById('thead-rekap');
+  const tbody = document.getElementById('tbody-rekap');
+  const judul = document.getElementById('rekap-judul');
+  const sub   = document.getElementById('rekap-sub');
+  const btnExp = document.getElementById('btn-export-rekap');
+
+  judul.style.display='none';
+  sub.textContent = 'Memuat ' + bulanLabel + '...';
+  thead.innerHTML=''; tbody.innerHTML='';
+  rekapData=[]; rekapHariArr=[];
+
+  // Ambil hari dari kalender_hijriah
   const {data:kalData, error:kalErr} = await sb
     .from('kalender_hijriah')
     .select('tanggal_masehi,hijri_day,hijri_label')
@@ -903,90 +786,156 @@ async function loadRekap(){
     .eq('hijri_year', hTahun)
     .order('tanggal_masehi');
 
-  if(kalErr){ toast('Gagal ambil kalender: '+kalErr.message,'err'); return; }
+  if(kalErr){ toast('Gagal ambil kalender: '+kalErr.message,'err'); sub.textContent=''; return; }
 
   if(!kalData||!kalData.length){
-    info.textContent = 'Belum ada sesi di bulan ' + bulanLabel;
-    tb.innerHTML = '<tr><td colspan="9"><div class="empty"><div class="ic">📅</div><p>Belum ada sesi absensi di bulan ' + bulanLabel + '</p></div></td></tr>';
-    return;
+    sub.textContent='';
+    tbody.innerHTML='<tr><td colspan="9"><div class="empty"><div class="ic">📅</div><p>Belum ada sesi di bulan '+bulanLabel+'</p></div></td></tr>';
+    btnExp.style.display='none'; return;
   }
 
-  // Step 2: ambil absensi untuk semua tanggal Masehi di bulan ini
-  const tglMasehiArr = kalData.map(k => k.tanggal_masehi);
+  // Ambil absensi
+  const tglArr = kalData.map(k=>k.tanggal_masehi);
   const {data:absenData, error:absErr} = await sb
     .from('absensi')
     .select('id_pps,status,tanggal,guru(nama,dom,tingkatan)')
-    .in('tanggal', tglMasehiArr)
+    .in('tanggal', tglArr)
     .order('tanggal');
+  if(absErr){ toast('Gagal ambil absensi: '+absErr.message,'err'); sub.textContent=''; return; }
 
-  if(absErr){ toast('Gagal ambil absensi: '+absErr.message,'err'); return; }
-
-  // Step 3: buat map tanggal_masehi → hijri_label
-  const tglToHijri = {};
-  kalData.forEach(k => { tglToHijri[k.tanggal_masehi] = k.hijri_label; });
-
-  // Step 4: susun data per guru
-  const map = {};
-  // Pastikan semua guru dari daftarGuru masuk map
-  daftarGuru.forEach(g => {
-    map[g.id_pps] = {
-      nama: g.nama, dom: g.dom||'—', tingkatan: g.tingkatan||'—', tgl:{}
-    };
+  // Map tgl → hijri_label & hari nama
+  const tglToHijri={}, tglToHari={};
+  kalData.forEach(k=>{
+    tglToHijri[k.tanggal_masehi]=k.hijri_label;
+    tglToHari[k.tanggal_masehi]=namaHariFromMasehi(k.tanggal_masehi);
   });
-  // Isi status dari absensi
-  (absenData||[]).forEach(a => {
-    const hl = tglToHijri[a.tanggal];
-    if(!hl) return;
+
+  // Susun map per guru
+  const map={};
+  daftarGuru.forEach(g=>{
+    map[g.id_pps]={nama:g.nama,dom:g.dom||'—',tingkatan:g.tingkatan||'—',idpps:g.id_pps,tgl:{}};
+  });
+  (absenData||[]).forEach(a=>{
+    const hl=tglToHijri[a.tanggal]; if(!hl) return;
     if(!map[a.id_pps]) map[a.id_pps]={
-      nama:a.guru?.nama||a.id_pps, dom:a.guru?.dom||'—', tingkatan:a.guru?.tingkatan||'—', tgl:{}
+      nama:a.guru?.nama||a.id_pps, dom:a.guru?.dom||'—',
+      tingkatan:a.guru?.tingkatan||'—', idpps:a.id_pps, tgl:{}
     };
-    map[a.id_pps].tgl[hl] = a.status;
+    map[a.id_pps].tgl[a.tanggal]=a.status;
   });
 
-  // Step 5: daftar hari (kolom) — urutkan berdasarkan hijri_day
-  const hariArr = kalData.map(k => k.hijri_label); // sudah terurut dari query
+  // Simpan data untuk filter
+  rekapHariArr=kalData; // [{tanggal_masehi, hijri_day, hijri_label}]
+  rekapData=Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
 
-  info.textContent = bulanLabel + ' · ' + hariArr.length + ' hari masuk · ' + Object.keys(map).length + ' guru';
+  // Render header
+  // Baris 1: label kolom kiri + angka hari hijri + label statistik
+  const thHariNum = kalData.map(k=>`<th class="rk-th-hari" title="${k.hijri_label}">${k.hijri_day}</th>`).join('');
+  // Baris 2: kosong (kiri) + nama hari (Ahad/Senin/dst) + kosong (stat)
+  const thNamaHari = kalData.map(k=>`<th class="rk-th-namahari">${tglToHari[k.tanggal_masehi].substring(0,3)}</th>`).join('');
+  const colKiri = `
+    <th class="rk-th-kiri center" rowspan="2">#</th>
+    <th class="rk-th-kiri" rowspan="2">ID PPS</th>
+    <th class="rk-th-kiri" rowspan="2" style="min-width:160px">Nama Guru</th>
+    <th class="rk-th-kiri" rowspan="2">Dom</th>
+    <th class="rk-th-kiri" rowspan="2">Tingkat</th>`;
+  const colStat = `
+    <th class="rk-th-stat" rowspan="2" style="color:#2e7d32">H</th>
+    <th class="rk-th-stat" rowspan="2" style="color:#c62828">A</th>
+    <th class="rk-th-stat" rowspan="2" style="color:#f57f17">I</th>
+    <th class="rk-th-stat" rowspan="2" style="color:#1565c0">S</th>
+    <th class="rk-th-stat" rowspan="2">%</th>`;
+  thead.innerHTML = `
+    <tr>${colKiri}${thHariNum}${colStat}</tr>
+    <tr>${thNamaHari}</tr>`;
 
-  // Step 6: render header
-  const tglHeaders = hariArr.map(h => `<th class="kal-head-tgl" title="${h}">${h.split(' ')[0]}</th>`).join('');
-  thead.innerHTML = `<tr>
-    <th>#</th><th style="min-width:140px">Nama Guru</th><th>Dom</th><th>Tingkat</th>
-    ${tglHeaders}
-    <th style="color:#2e7d32">H</th>
-    <th style="color:#c62828">A</th>
-    <th style="color:#f57f17">I</th>
-    <th style="color:#1565c0">S</th>
-    <th>%</th>
-  </tr>`;
+  renderRekapRows();
 
-  // Step 7: render baris guru
-  const rows = Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
+  judul.textContent = bulanLabel + ' (Hijriah)';
+  judul.style.display='block';
+  sub.textContent = kalData.length + ' hari masuk · ' + rekapData.length + ' guru';
+  btnExp.style.display='inline-flex';
+}
 
-  tb.innerHTML = rows.map(([idpps,r],i)=>{
-    const kalCells = hariArr.map(h=>{
-      const st = r.tgl[h];
-      if(!st) return `<td style="text-align:center"><span class="kal-cell kosong" title="${h}">·</span></td>`;
-      return `<td style="text-align:center"><span class="kal-cell ${st}" title="${h}: ${st}">${st}</span></td>`;
+function renderRekapRows(filter=''){
+  const tbody = document.getElementById('tbody-rekap');
+  let rows = rekapData;
+  if(filter){
+    const q=filter.toLowerCase();
+    rows=rows.filter(([,r])=>r.nama.toLowerCase().includes(q)||String(r.idpps).includes(q));
+  }
+  if(!rows.length){
+    tbody.innerHTML='<tr><td colspan="'+(5+rekapHariArr.length+5)+'"><div class="empty"><div class="ic">🔍</div><p>Tidak ada guru yang sesuai pencarian</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = rows.map(([idpps,r],i)=>{
+    const kalCells = rekapHariArr.map(k=>{
+      const st = r.tgl[k.tanggal_masehi];
+      if(!st) return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell kosong" title="${k.hijri_label}">·</span></td>`;
+      const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||st;
+      return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell ${st}" title="${k.hijri_label}: ${st}">${ic}</span></td>`;
     }).join('');
     const H=Object.values(r.tgl).filter(v=>v==='H').length;
     const A=Object.values(r.tgl).filter(v=>v==='A').length;
     const I=Object.values(r.tgl).filter(v=>v==='I').length;
     const S=Object.values(r.tgl).filter(v=>v==='S').length;
-    const tot=H+A+I+S, pct=tot>0?Math.round(H/tot*100):0;
-    const pw=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
+    const tot=H+A+I+S;
+    const pct=tot>0?Math.round(H/tot*100):0;
+    const pc=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
+    const barW=Math.max(3,Math.round(pct*40/100));
     return `<tr>
-      <td>${i+1}</td>
-      <td style="font-weight:600;white-space:nowrap">${r.nama}</td>
-      <td>${r.dom}</td><td>${r.tingkatan}</td>
+      <td class="rk-td center">${i+1}</td>
+      <td class="rk-td code">${r.idpps}</td>
+      <td class="rk-td nama">${r.nama}</td>
+      <td class="rk-td">${r.dom}</td>
+      <td class="rk-td">${r.tingkatan}</td>
       ${kalCells}
-      <td style="color:#2e7d32;font-weight:700;text-align:center">${H}</td>
-      <td style="color:#c62828;font-weight:700;text-align:center">${A}</td>
-      <td style="color:#f57f17;font-weight:700;text-align:center">${I}</td>
-      <td style="color:#1565c0;font-weight:700;text-align:center">${S}</td>
-      <td style="font-weight:700;color:${pw};text-align:center">${pct}%</td>
+      <td class="rk-td-stat H">${H}</td>
+      <td class="rk-td-stat A">${A}</td>
+      <td class="rk-td-stat I">${I}</td>
+      <td class="rk-td-stat S">${S}</td>
+      <td class="rk-td-stat" style="min-width:70px">
+        <div class="pct-wrap">
+          <div class="pct-bar" style="background:${pc};width:${barW}px"></div>
+          <span class="pct-num" style="color:${pc}">${pct}%</span>
+        </div>
+      </td>
     </tr>`;
   }).join('');
+}
+
+function filterRekap(){
+  const q = document.getElementById('rekap-cari').value.trim();
+  renderRekapRows(q);
+}
+
+// ===== EXPORT REKAP EXCEL =====
+function exportRekapExcel(){
+  if(!rekapData.length){ toast('Belum ada data rekap!','err'); return; }
+  const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
+  const hTahun = parseInt(document.getElementById('f-tahun-hijri').value);
+  const namaFile = 'Rekap_' + BLN_H[hBulan] + '_' + hTahun + 'H.xlsx';
+
+  const headers = ['No','ID PPS','Nama Guru','Dom','Tingkatan',
+    ...rekapHariArr.map(k=>k.hijri_day+' '+k.hijri_label.split(' ')[1]?.substring(0,3)),
+    'H','A','I','S','%'];
+
+  const rows = rekapData.map(([idpps,r],i)=>{
+    const H=Object.values(r.tgl).filter(v=>v==='H').length;
+    const A=Object.values(r.tgl).filter(v=>v==='A').length;
+    const I=Object.values(r.tgl).filter(v=>v==='I').length;
+    const S=Object.values(r.tgl).filter(v=>v==='S').length;
+    const tot=H+A+I+S;
+    const pct=tot>0?Math.round(H/tot*100):0;
+    const kalVals=rekapHariArr.map(k=>r.tgl[k.tanggal_masehi]||'');
+    return [i+1,r.idpps,r.nama,r.dom,r.tingkatan,...kalVals,H,A,I,S,pct+'%'];
+  });
+
+  const ws = XLSX.utils.aoa_to_sheet([headers,...rows]);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, BLN_H[hBulan]+' '+hTahun);
+  XLSX.writeFile(wb, namaFile);
+  toast('✅ Export berhasil: '+namaFile,'suc');
 }
 
 // ===== DATA GURU =====
@@ -1057,3 +1006,4 @@ function toast(msg,type=''){
 }
 </script>
 </body>
+</html>
