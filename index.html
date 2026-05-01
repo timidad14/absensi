@@ -296,15 +296,24 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 </style>
 </head>
 <body>
+<div id="login-modal" style="position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.18);display:flex;align-items:center;justify-content:center">
+  <form id="login-form" style="background:#fff;padding:32px 28px 22px 28px;border-radius:14px;box-shadow:0 4px 32px rgba(0,0,0,0.13);min-width:320px;max-width:90vw;display:flex;flex-direction:column;gap:16px">
+    <div style="font-size:19px;font-weight:700;color:#1a3a2a;text-align:center;margin-bottom:6px">Login Absensi Guru</div>
+    <input id="login-username" type="text" placeholder="Username" autocomplete="username" style="padding:10px 12px;font-size:15px;border-radius:8px;border:1.5px solid #ddd;outline:none" required autofocus>
+    <input id="login-password" type="password" placeholder="Password" autocomplete="current-password" style="padding:10px 12px;font-size:15px;border-radius:8px;border:1.5px solid #ddd;outline:none" required>
+    <button type="submit" style="background:#2d6a4f;color:#fff;font-weight:700;padding:10px 0;border:none;border-radius:8px;font-size:15px;cursor:pointer">Login</button>
+    <div id="login-error" style="color:#c0392b;font-size:13px;text-align:center;display:none"></div>
+  </form>
+</div>
 
 <!-- Overlay mobile -->
 <div class="sb-overlay" id="sb-overlay" onclick="closeSidebar()"></div>
 
 <div class="sb" id="sidebar">
   <div class="sb-logo">
-    <span class="ar">إدادية المفتاح</span>
+    <span class="ar">المفتاح للعلوم</span>
     <div class="nm">Tarbiyah Idadiyah al-Miftah</div>
-    <div class="sb2">Sistem Absensi Guru</div>
+    <div class="sb2">Powered By Nabil Ghufron</div>
   </div>
   <nav class="sb-nav">
     <button class="ni on" onclick="go('dashboard',this)"><span class="ic">📊</span>Dashboard</button>
@@ -494,6 +503,28 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
 <div class="toast" id="toast"></div>
 
 <script>
+// ===== LOGIN SIMPLE =====
+document.addEventListener('DOMContentLoaded',()=>{
+  const loginModal = document.getElementById('login-modal');
+  const loginForm = document.getElementById('login-form');
+  if(loginForm){
+    loginForm.onsubmit = function(e){
+      e.preventDefault();
+      const u = document.getElementById('login-username').value.trim();
+      const p = document.getElementById('login-password').value;
+      if(u==='Nabil' && p==='907076'){
+        loginModal.style.display='none';
+        document.body.style.overflow='auto';
+      }else{
+        const err = document.getElementById('login-error');
+        err.textContent = 'Username atau password salah!';
+        err.style.display = 'block';
+      }
+    };
+    document.body.style.overflow='hidden';
+  }
+});
+
 // ===== SUPABASE CONFIG =====
 // ⚠️ PENTING: Aktifkan Row Level Security (RLS) di semua tabel Supabase Anda!
 // Tabel yang perlu RLS: guru, absensi, kalender_hijriah
@@ -571,36 +602,19 @@ function namaHariFromMasehi(tglStr) {
 }
 
 // ===== SESI ABSENSI =====
-function sesiKey() { return today(); }
+// Sesi kini murni berbasis tanggal Hijriah yang ditentukan manual.
+// tanggal_key = 'YYYY-MM-DD' masehi (tetap dipakai sebagai FK di absensi),
+// tapi DIBUAT dari pilihan hijriah, bukan dari hari realtime.
+// Sesi tidak kedaluwarsa otomatis — harus ditutup manual.
 
 async function loadSesi() {
   const saved = localStorage.getItem('sesi_absensi');
   if (saved) {
     try {
-      const parsed = JSON.parse(saved);
-      if (parsed.tanggal_key === today()) {
-        sesiAktif = parsed;
-      } else {
-        localStorage.removeItem('sesi_absensi');
-        sesiAktif = null;
-      }
+      sesiAktif = JSON.parse(saved);
     } catch(e) { sesiAktif = null; }
-  }
-
-  if (!sesiAktif && sb) {
-    const {data} = await sb.from('kalender_hijriah')
-      .select('*').eq('tanggal_masehi', today()).maybeSingle();
-    if (data) {
-      sesiAktif = {
-        tanggal_key: data.tanggal_masehi,
-        hijri_label: data.hijri_label,
-        hijri_day: data.hijri_day,
-        hijri_month: data.hijri_month,
-        hijri_year: data.hijri_year,
-        masehi_label: todayMasehi()
-      };
-      localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
-    }
+  } else {
+    sesiAktif = null;
   }
   renderSesi();
 }
@@ -614,17 +628,17 @@ function renderSesi() {
   if (sesiAktif) {
     box.className = 'sesi-box aktif';
     tglH.textContent = sesiAktif.hijri_label;
-    tglM.textContent = sesiAktif.masehi_label;
+    tglM.textContent = 'Tanggal masehi terdaftar: ' + (sesiAktif.tanggal_key || '—');
     acts.innerHTML = `
       <div class="sesi-status buka">🟢 Sesi Aktif</div>
       <button class="btn-sesi btn-tutup-sesi" onclick="tutupSesi()">🔒 Tutup Sesi</button>
     `;
-    document.getElementById('tgl-top').textContent = sesiAktif.hijri_label + ' | ' + sesiAktif.masehi_label.split(',')[1]?.trim();
-    document.getElementById('ci-tgl').textContent = sesiAktif.hijri_label + ' · ' + sesiAktif.masehi_label;
+    document.getElementById('tgl-top').textContent = sesiAktif.hijri_label;
+    document.getElementById('ci-tgl').textContent = sesiAktif.hijri_label + ' · ' + (sesiAktif.tanggal_key || '');
   } else {
     box.className = 'sesi-box';
     tglH.textContent = 'Belum ada sesi aktif';
-    tglM.textContent = 'Buka sesi untuk mulai absensi hari ini';
+    tglM.textContent = 'Tentukan tanggal Hijriah lalu buka sesi';
     acts.innerHTML = buildBukaSesiForm();
     const hh = todayHijri();
     setTimeout(()=>{
@@ -653,23 +667,26 @@ async function bukaSesi() {
   const hy = parseInt(document.getElementById('inp-hy').value)||1446;
   if(hd<1||hd>30||hm<1||hm>12||hy<1400){ toast('Tanggal Hijriah tidak valid!','err'); return; }
 
-  const tglMasehi = sesiKey();
+  // tanggal_key dibuat dari hijriah saja: format "H-YYYY-MM-DD" (misal: H-1447-03-15)
+  // Ini memastikan dua sesi dengan tanggal hijri berbeda → rekap terpisah walau dibuka hari masehi sama
+  const tglKey = `H-${hy}-${String(hm).padStart(2,'0')}-${String(hd).padStart(2,'0')}`;
   const label = hijriLabel(hd, hm, hy);
 
   sesiAktif = {
-    tanggal_key: tglMasehi,
+    tanggal_key: tglKey,
     hijri_label: label,
     hijri_day: hd, hijri_month: hm, hijri_year: hy,
-    masehi_label: todayMasehi()
+    dibuka_pada: today() // hanya catatan, tidak dipakai untuk absensi
   };
   localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
 
   if(sb){
+    // Simpan pemetaan di kalender_hijriah dengan tanggal_sesi = tglKey
     const {error} = await sb.from('kalender_hijriah').upsert({
-      tanggal_masehi: tglMasehi,
+      tanggal_sesi: tglKey,
       hijri_day: hd, hijri_month: hm, hijri_year: hy,
       hijri_label: label
-    }, {onConflict:'tanggal_masehi'});
+    }, {onConflict:'tanggal_sesi'});
     if(error) console.warn('Kalender hijriah save error:', error.message);
   }
 
@@ -678,16 +695,43 @@ async function bukaSesi() {
   toast('✅ Sesi absensi ' + label + ' dibuka!', 'suc');
 }
 
-function tutupSesi() {
-  if(!confirm('Tutup sesi absensi ' + sesiAktif?.hijri_label + '?')) return;
+async function tutupSesi() {
+  if(!sesiAktif) return;
+  if(!confirm('Tutup sesi absensi ' + sesiAktif.hijri_label + '?\n\nGuru yang belum check-in akan otomatis dicatat Alpha.')) return;
+
+  // Tandai Alpha untuk semua guru yang belum absen di sesi ini
+  if(sb && daftarGuru.length > 0){
+    const tgl = sesiAktif.tanggal_key;
+    // Ambil yang sudah absen
+    const {data:sudahAbsen} = await sb.from('absensi').select('id_pps').eq('tanggal', tgl);
+    const sudahIds = new Set((sudahAbsen||[]).map(a=>a.id_pps));
+    const alphaList = daftarGuru
+      .filter(g => !sudahIds.has(g.id_pps))
+      .map(g => ({
+        id_pps: g.id_pps,
+        tanggal: tgl,
+        status: 'A',
+        hijri_label: sesiAktif.hijri_label,
+        keterangan: 'Auto-alpha saat sesi ditutup · ' + sesiAktif.hijri_label
+      }));
+    if(alphaList.length > 0){
+      const {error} = await sb.from('absensi').insert(alphaList);
+      if(error) toast('⚠️ Gagal insert alpha: ' + error.message, 'err');
+      else toast(`🔒 Sesi ditutup. ${alphaList.length} guru dicatat Alpha.`, '');
+    } else {
+      toast('🔒 Sesi ditutup. Semua guru sudah check-in.', 'suc');
+    }
+  } else {
+    toast('🔒 Sesi ditutup.', '');
+  }
+
   sesiAktif = null;
   localStorage.removeItem('sesi_absensi');
   renderSesi();
-  toast('🔒 Sesi ditutup.', '');
 }
 
 function getTanggalSesi() {
-  return sesiAktif ? sesiAktif.tanggal_key : today();
+  return sesiAktif ? sesiAktif.tanggal_key : null;
 }
 
 // ===== INIT =====
@@ -809,6 +853,7 @@ async function doCheckin(){
   }
 
   const tgl = getTanggalSesi();
+  if(!tgl){ showFb('err','⚠️ Sesi Belum Dibuka','Buka sesi absensi dulu!','notfound'); inp.value=''; setTimeout(clearFb,3500); return; }
   const {data:exist}=await sb.from('absensi').select('id,status').eq('id_pps',idpps).eq('tanggal',tgl).maybeSingle();
   if(exist){
     const lbl={H:'Hadir',A:'Alpha',I:'Izin',S:'Sakit'};
@@ -856,6 +901,11 @@ function renderLog(){
 async function updateSideStats(){
   if(!sb) return;
   const tgl=getTanggalSesi();
+  if(!tgl){
+    document.getElementById('ci-hadir').textContent='—';
+    document.getElementById('ci-alpha').textContent='—';
+    return;
+  }
   const {data:dH}=await sb.from('absensi').select('id').eq('tanggal',tgl).eq('status','H');
   const hadir=(dH||[]).length;
   const belum = Math.max(0, daftarGuru.length - hadir);
@@ -866,13 +916,16 @@ async function updateSideStats(){
 // ===== DASHBOARD =====
 async function loadDashboard(){
   if(!sb) return;
-  const tgl=getTanggalSesi()||today();
-  const {data:dH}=await sb.from('absensi').select('status').eq('tanggal',tgl);
-  const hadirHariIni = (dH||[]).filter(a=>a.status==='H').length;
-  document.getElementById('s-hadir').textContent = hadirHariIni;
+  const tgl = getTanggalSesi(); // null jika tidak ada sesi
+  let hadirHariIni = 0;
+  if(tgl){
+    const {data:dH}=await sb.from('absensi').select('status').eq('tanggal',tgl);
+    hadirHariIni = (dH||[]).filter(a=>a.status==='H').length;
+  }
+  document.getElementById('s-hadir').textContent = tgl ? hadirHariIni : '—';
 
-  // FIX: Alpha = total guru - yang hadir hari ini (bukan status 'A' di DB)
-  const alphaHariIni = Math.max(0, daftarGuru.length - hadirHariIni);
+  // Alpha = total guru - yang hadir di sesi aktif
+  const alphaHariIni = tgl ? Math.max(0, daftarGuru.length - hadirHariIni) : '—';
   document.getElementById('s-alpha').textContent = alphaHariIni;
 
   const d30 = new Date(); d30.setDate(d30.getDate()-30);
@@ -893,7 +946,7 @@ async function loadDashboard(){
   </tr>`).join('');
 }
 
-// ===== REKAP BULANAN — KALENDER GRID =====
+// ===== REKAP BULANAN — BERBASIS SESI HIJRIAH =====
 async function loadRekap(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
@@ -910,7 +963,6 @@ async function loadRekap(){
   btnExp.style.display='none';
   rekapData=[]; rekapHariArr=[];
 
-  // FIX: Tampilkan loading spinner
   thead.innerHTML='';
   tbody.innerHTML=`<tr><td colspan="9">
     <div class="rekap-loading">
@@ -920,42 +972,48 @@ async function loadRekap(){
   </td></tr>`;
   sub.textContent = '';
 
-  // Ambil hari dari kalender_hijriah
-  const {data:kalData, error:kalErr} = await sb
+  // 1. Ambil semua sesi (kalender_hijriah) untuk bulan & tahun Hijriah ini
+  //    tanggal_sesi di sini sebenarnya adalah tglKey format H-YYYY-MM-DD
+  const {data:sesiList, error:sesiErr} = await sb
     .from('kalender_hijriah')
-    .select('tanggal_masehi,hijri_day,hijri_label')
+    .select('tanggal_sesi,hijri_day,hijri_label,hijri_month,hijri_year')
     .eq('hijri_month', hBulan)
     .eq('hijri_year', hTahun)
-    .order('tanggal_masehi');
+    .order('hijri_day', {ascending: true});
+  if(sesiErr){ toast('Gagal ambil kalender: '+sesiErr.message,'err'); tbody.innerHTML=''; return; }
 
-  if(kalErr){ toast('Gagal ambil kalender: '+kalErr.message,'err'); tbody.innerHTML=''; return; }
-
-  if(!kalData||!kalData.length){
-    sub.textContent='';
-    tbody.innerHTML='<tr><td colspan="9"><div class="empty"><div class="ic">📅</div><p>Belum ada sesi di bulan '+bulanLabel+'</p></div></td></tr>';
-    return;
+  // 2. Bangun 30 kolom hari untuk sebulan penuh (1–30)
+  //    Kolom yang ada sesinya = ada data di sesiList, kosong = belum ada sesi
+  const kalData = [];
+  for(let i=1; i<=30; i++){
+    const s = (sesiList||[]).find(x=>x.hijri_day===i);
+    kalData.push({
+      hijri_day: i,
+      hijri_label: `${i} ${BLN_H[hBulan]} ${hTahun}`,
+      tanggal_key: s ? s.tanggal_sesi : null, // null = belum ada sesi
+      ada_sesi: !!s
+    });
   }
 
-  const tglArr = kalData.map(k=>k.tanggal_masehi);
-  const {data:absenData, error:absErr} = await sb
-    .from('absensi')
-    .select('id_pps,status,tanggal,guru(nama,dom,tingkatan)')
-    .in('tanggal', tglArr)
-    .order('tanggal');
-  if(absErr){ toast('Gagal ambil absensi: '+absErr.message,'err'); tbody.innerHTML=''; return; }
+  // 3. Ambil absensi untuk semua tglKey yang ada sesinya
+  const tglArr = kalData.map(k=>k.tanggal_key).filter(Boolean);
+  let absenData = [];
+  if(tglArr.length > 0) {
+    const absenRes = await sb
+      .from('absensi')
+      .select('id_pps,status,tanggal,guru(nama,dom,tingkatan)')
+      .in('tanggal', tglArr)
+      .order('tanggal');
+    if(absenRes.error){ toast('Gagal ambil absensi: '+absenRes.error.message,'err'); tbody.innerHTML=''; return; }
+    absenData = absenRes.data || [];
+  }
 
-  const tglToHijri={}, tglToHari={};
-  kalData.forEach(k=>{
-    tglToHijri[k.tanggal_masehi]=k.hijri_label;
-    tglToHari[k.tanggal_masehi]=namaHariFromMasehi(k.tanggal_masehi);
-  });
-
+  // 4. Bangun map guru
   const map={};
   daftarGuru.forEach(g=>{
-    map[g.id_pps]={nama:g.nama,dom:g.dom||'—',tingkatan:g.tingkatan||'—',idpps:g.id_pps,tgl:{}};
+    map[g.id_pps]={nama:g.nama, dom:g.dom||'—', tingkatan:g.tingkatan||'—', idpps:g.id_pps, tgl:{}};
   });
   (absenData||[]).forEach(a=>{
-    const hl=tglToHijri[a.tanggal]; if(!hl) return;
     if(!map[a.id_pps]) map[a.id_pps]={
       nama:a.guru?.nama||a.id_pps, dom:a.guru?.dom||'—',
       tingkatan:a.guru?.tingkatan||'—', idpps:a.id_pps, tgl:{}
@@ -963,11 +1021,22 @@ async function loadRekap(){
     map[a.id_pps].tgl[a.tanggal]=a.status;
   });
 
-  rekapHariArr=kalData;
-  rekapData=Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
+  // 5. Untuk kolom yang ADA sesi: jika guru tidak absen → Alpha
+  //    Untuk kolom yang TIDAK ada sesi: biarkan kosong (undefined)
+  kalData.forEach(k=>{
+    if(k.ada_sesi && k.tanggal_key){
+      Object.values(map).forEach(r=>{
+        if(!r.tgl[k.tanggal_key]) r.tgl[k.tanggal_key]='A';
+      });
+    }
+  });
 
-  const thHariNum = kalData.map(k=>`<th class="rk-th-hari" title="${k.hijri_label}">${k.hijri_day}</th>`).join('');
-  const thNamaHari = kalData.map(k=>`<th class="rk-th-namahari">${tglToHari[k.tanggal_masehi].substring(0,3)}</th>`).join('');
+  rekapHariArr = kalData;
+  rekapData = Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
+
+  // 6. Render header tabel
+  const thHariNum = kalData.map(k=>`<th class="rk-th-hari" title="${k.hijri_label}"${!k.ada_sesi?' style="opacity:.35"':''}>${k.hijri_day}</th>`).join('');
+  const thNamaHari = kalData.map(k=>`<th class="rk-th-namahari"${!k.ada_sesi?' style="opacity:.35"':''}>${k.ada_sesi?'✓':'·'}</th>`).join('');
   const colKiri = `
     <th class="rk-th-kiri center" rowspan="2">#</th>
     <th class="rk-th-kiri" rowspan="2">ID PPS</th>
@@ -984,11 +1053,12 @@ async function loadRekap(){
     <tr>${colKiri}${thHariNum}${colStat}</tr>
     <tr>${thNamaHari}</tr>`;
 
+  const jmlSesi = kalData.filter(k=>k.ada_sesi).length;
   renderRekapRows();
-
   judul.textContent = bulanLabel + ' (Hijriah)';
   judul.style.display='block';
-  sub.textContent = kalData.length + ' hari masuk · ' + rekapData.length + ' guru';
+  sub.textContent = jmlSesi + ' sesi · ' + rekapData.length + ' guru';
+  if(jmlSesi===0) sub.textContent += ' · Belum ada sesi di bulan ini';
   btnExp.style.display='inline-flex';
 }
 
@@ -1005,15 +1075,22 @@ function renderRekapRows(filter=''){
   }
   tbody.innerHTML = rows.map(([idpps,r],i)=>{
     const kalCells = rekapHariArr.map(k=>{
-      const st = r.tgl[k.tanggal_masehi];
-      if(!st) return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell kosong" title="${k.hijri_label}">·</span></td>`;
-      const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||st;
-      return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell ${st}" title="${k.hijri_label}: ${st}">${ic}</span></td>`;
+      if(!k.ada_sesi){
+        // Belum ada sesi — tampilkan sel abu-abu tidak bisa diklik
+        return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell kosong" title="${k.hijri_label}: tidak ada sesi" style="cursor:default">·</span></td>`;
+      }
+      const st = r.tgl[k.tanggal_key];
+      const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||'·';
+      return `<td style="text-align:center;padding:6px 4px">
+        <span class="rk-cell ${st||'kosong'}" title="${k.hijri_label}: ${st||'—'}" style="cursor:pointer" onclick="editRekapStatus('${r.idpps}','${k.tanggal_key}','${st||'A'}',this)">${ic}</span>
+      </td>`;
     }).join('');
-    const H=Object.values(r.tgl).filter(v=>v==='H').length;
-    const A=Object.values(r.tgl).filter(v=>v==='A').length;
-    const I=Object.values(r.tgl).filter(v=>v==='I').length;
-    const S=Object.values(r.tgl).filter(v=>v==='S').length;
+    // Hitung hanya dari kolom yang ada sesi
+    const sesiKeys = rekapHariArr.filter(k=>k.ada_sesi).map(k=>k.tanggal_key);
+    const H=sesiKeys.filter(k=>r.tgl[k]==='H').length;
+    const A=sesiKeys.filter(k=>r.tgl[k]==='A').length;
+    const I=sesiKeys.filter(k=>r.tgl[k]==='I').length;
+    const S=sesiKeys.filter(k=>r.tgl[k]==='S').length;
     const tot=H+A+I+S;
     const pct=tot>0?Math.round(H/tot*100):0;
     const pc=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
@@ -1039,6 +1116,56 @@ function renderRekapRows(filter=''){
   }).join('');
 }
 
+// ===== EDIT STATUS REKAP =====
+function editRekapStatus(idpps, tanggalKey, status, el) {
+  if(!tanggalKey || tanggalKey==='null') return;
+  const opts = [
+    {v:'H', l:'Hadir'},
+    {v:'A', l:'Alpha'},
+    {v:'I', l:'Izin'},
+    {v:'S', l:'Sakit'}
+  ];
+  const rect = el.getBoundingClientRect();
+  let sel = document.createElement('select');
+  sel.style.position = 'fixed';
+  sel.style.left = rect.left+'px';
+  sel.style.top = rect.top+'px';
+  sel.style.zIndex = 99999;
+  sel.style.fontSize = '14px';
+  sel.style.padding = '3px 8px';
+  opts.forEach(o=>{
+    let op = document.createElement('option');
+    op.value = o.v; op.textContent = o.l; if(o.v===status) op.selected = true;
+    sel.appendChild(op);
+  });
+  document.body.appendChild(sel);
+  sel.focus();
+  sel.onblur = ()=>{ sel.remove(); };
+  sel.onchange = async ()=>{
+    const newStatus = sel.value;
+    sel.remove();
+    if(!window.sb){ toast('Supabase belum siap','err'); return; }
+    // Cek apakah sudah ada absensi
+    const {data:exist} = await sb.from('absensi').select('id').eq('id_pps',idpps).eq('tanggal',tanggalKey).maybeSingle();
+    if(exist){
+      const {error} = await sb.from('absensi').update({status:newStatus}).eq('id',exist.id);
+      if(error) toast('Gagal update: '+error.message,'err');
+      else toast('Berhasil diupdate!','suc');
+    }else{
+      // Ambil hijri_label dari rekapHariArr
+      const hari = rekapHariArr.find(k=>k.tanggal_key===tanggalKey);
+      const {error} = await sb.from('absensi').insert({
+        id_pps:idpps, tanggal:tanggalKey, status:newStatus,
+        hijri_label: hari ? hari.hijri_label : '',
+        keterangan:'Edit manual rekap'
+      });
+      if(error) toast('Gagal tambah: '+error.message,'err');
+      else toast('Berhasil ditambah!','suc');
+    }
+    loadRekap();
+  };
+}
+
 function filterRekap(){
   const q = document.getElementById('rekap-cari').value.trim();
   renderRekapRows(q);
@@ -1052,17 +1179,18 @@ function exportRekapExcel(){
   const namaFile = 'Rekap_' + BLN_H[hBulan] + '_' + hTahun + 'H.xlsx';
 
   const headers = ['No','ID PPS','Nama Guru','Dom','Tingkatan',
-    ...rekapHariArr.map(k=>k.hijri_day+' '+k.hijri_label.split(' ')[1]?.substring(0,3)),
+    ...rekapHariArr.map(k=> k.ada_sesi ? String(k.hijri_day) : k.hijri_day+'*'),
     'H','A','I','S','%'];
 
   const rows = rekapData.map(([idpps,r],i)=>{
-    const H=Object.values(r.tgl).filter(v=>v==='H').length;
-    const A=Object.values(r.tgl).filter(v=>v==='A').length;
-    const I=Object.values(r.tgl).filter(v=>v==='I').length;
-    const S=Object.values(r.tgl).filter(v=>v==='S').length;
+    const sesiKeys = rekapHariArr.filter(k=>k.ada_sesi).map(k=>k.tanggal_key);
+    const H=sesiKeys.filter(k=>r.tgl[k]==='H').length;
+    const A=sesiKeys.filter(k=>r.tgl[k]==='A').length;
+    const I=sesiKeys.filter(k=>r.tgl[k]==='I').length;
+    const S=sesiKeys.filter(k=>r.tgl[k]==='S').length;
     const tot=H+A+I+S;
     const pct=tot>0?Math.round(H/tot*100):0;
-    const kalVals=rekapHariArr.map(k=>r.tgl[k.tanggal_masehi]||'');
+    const kalVals=rekapHariArr.map(k=>k.ada_sesi ? (r.tgl[k.tanggal_key]||'A') : '');
     return [i+1,r.idpps,r.nama,r.dom,r.tingkatan,...kalVals,H,A,I,S,pct+'%'];
   });
 
