@@ -90,6 +90,30 @@ tr:hover td{background:#fdf8f0}
 /* CHECK-IN */
 .ci-wrap{display:grid;grid-template-columns:1fr 290px;gap:18px;align-items:start}
 .ci-box{background:var(--hijau-tua);border-radius:16px;padding:32px 38px;text-align:center;position:relative;overflow:hidden}
+
+/* JAM MANUAL — compact dengan popover */
+.ci-jam-wrap{display:inline-flex;align-items:center;gap:8px;margin-bottom:3px;position:relative;z-index:2}
+.ci-jam-setting-btn{background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.18);color:rgba(255,255,255,.5);border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;flex-shrink:0;padding:0}
+.ci-jam-setting-btn:hover{background:rgba(201,168,76,.25);color:var(--emas);border-color:var(--emas)}
+.ci-jam-setting-btn.active{background:rgba(201,168,76,.2);color:var(--emas);border-color:var(--emas)}
+
+/* Popover */
+.ci-jam-popover{display:none;position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#1e4535;border:1px solid rgba(201,168,76,.35);border-radius:14px;padding:16px 18px;z-index:50;box-shadow:0 8px 32px rgba(0,0,0,.35);min-width:200px}
+.ci-jam-popover.show{display:block;animation:popIn .18s ease}
+@keyframes popIn{from{opacity:0;transform:translateX(-50%) scale(.93)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.cjp-title{color:rgba(255,255,255,.5);font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;text-align:center}
+.cjp-grid{display:flex;align-items:center;justify-content:center;gap:4px;margin-bottom:12px}
+.cjp-col{display:flex;flex-direction:column;align-items:center;gap:4px}
+.cjp-sep{color:var(--emas);font-size:22px;font-weight:700;margin-bottom:18px;line-height:1}
+.cjp-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);border-radius:6px;width:44px;padding:4px 0;font-size:12px;cursor:pointer;transition:all .12s;font-family:inherit}
+.cjp-btn:hover{background:rgba(201,168,76,.25);color:var(--emas);border-color:var(--emas)}
+.cjp-btn:active{transform:scale(.92)}
+.cjp-val{color:#fff;font-size:22px;font-weight:700;font-variant-numeric:tabular-nums;min-width:44px;text-align:center;line-height:1}
+.cjp-lbl{color:rgba(255,255,255,.3);font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+.cjp-reset{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.13);color:rgba(255,255,255,.55);border-radius:8px;padding:7px 0;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:8px}
+.cjp-reset:hover{background:rgba(255,255,255,.12);color:#fff}
+.cjp-badge{text-align:center;font-size:10px;font-weight:700;letter-spacing:.5px;padding:3px 10px;border-radius:20px;background:rgba(67,160,71,.15);color:#a5d6a7;border:1px solid rgba(67,160,71,.3);display:inline-block;width:100%;box-sizing:border-box}
+.cjp-badge.manual{background:rgba(201,168,76,.15);color:var(--emas-muda);border-color:rgba(201,168,76,.3)}
 .ci-box::before{content:'';position:absolute;top:-40px;right:-40px;width:170px;height:170px;border-radius:50%;background:rgba(201,168,76,.06)}
 .ci-box::after{content:'';position:absolute;bottom:-50px;left:-25px;width:200px;height:200px;border-radius:50%;background:rgba(64,145,108,.09)}
 .ci-ar{font-family:'Amiri',serif;color:var(--emas);font-size:26px;display:block;margin-bottom:3px}
@@ -191,6 +215,18 @@ tr:hover td{background:#fdf8f0}
 .rk-cell.I{background:#fff8e1;color:#f57f17}
 .rk-cell.S{background:#e3f2fd;color:#1565c0}
 .rk-cell.kosong{background:#f5f5f5;color:#ccc}
+
+/* Sel jam compact (untuk grid 3 jam per hari) */
+.rk-td-jam{text-align:center;padding:5px 2px;font-size:10px;font-weight:700;border-bottom:1px solid #f0ebe0;vertical-align:middle;min-width:22px;max-width:26px;cursor:default}
+.rk-td-jam.H{background:#e8f5e9;color:#2e7d32}
+.rk-td-jam.A{background:#fce4ec;color:#c62828}
+.rk-td-jam.I{background:#fff8e1;color:#f57f17}
+.rk-td-jam.S{background:#e3f2fd;color:#1565c0}
+.rk-td-jam.kosong{background:#fafafa;color:#ddd}
+.rk-td-jam[style*="cursor:pointer"]:hover{filter:brightness(.93)}
+
+/* Catatan jam hadir di bawah nama */
+.rk-catatan-jam{font-size:9.5px;color:var(--abu);font-weight:400;margin-top:2px;white-space:normal;line-height:1.3}
 .rk-td-stat{padding:7px 6px;text-align:center;font-size:12.5px;font-weight:700;border-bottom:1px solid #f0ebe0;white-space:nowrap}
 .rk-td-stat.H{color:#2e7d32}
 .rk-td-stat.A{color:#c62828}
@@ -271,6 +307,7 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
     grid-template-columns: 1fr;
   }
   .ci-box { padding: 22px 18px; }
+  .ci-jam-popover { min-width: 180px; }
 
   /* Stat grid 2 kolom */
   .sg { grid-template-columns: repeat(2, 1fr); }
@@ -384,7 +421,38 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
         <div class="ci-box">
           <span class="ci-ar">بِسْمِ اللّٰهِ الرَّحْمٰنِ الرَّحِيْمِ</span>
           <div class="ci-sub">Absensi Guru · Idadiyah al-Miftah</div>
-          <div class="ci-jam" id="ci-jam">00:00:00</div>
+          <div class="ci-jam-wrap" id="ci-jam-wrap">
+            <div class="ci-jam" id="ci-jam">00:00:00</div>
+            <button class="ci-jam-setting-btn" id="btn-jam-setting" onclick="toggleJamPopover(event)" title="Atur jam manual">⚙️</button>
+            <!-- Popover atur jam -->
+            <div class="ci-jam-popover" id="ci-jam-popover">
+              <div class="cjp-title">⏱ Atur Jam Manual</div>
+              <div class="cjp-grid">
+                <div class="cjp-col">
+                  <button class="cjp-btn" onclick="adjustManualTime('hour',1)">▲</button>
+                  <span class="cjp-val" id="cjp-h">00</span>
+                  <button class="cjp-btn" onclick="adjustManualTime('hour',-1)">▼</button>
+                  <span class="cjp-lbl">JAM</span>
+                </div>
+                <span class="cjp-sep">:</span>
+                <div class="cjp-col">
+                  <button class="cjp-btn" onclick="adjustManualTime('minute',1)">▲</button>
+                  <span class="cjp-val" id="cjp-m">00</span>
+                  <button class="cjp-btn" onclick="adjustManualTime('minute',-1)">▼</button>
+                  <span class="cjp-lbl">MNT</span>
+                </div>
+                <span class="cjp-sep">:</span>
+                <div class="cjp-col">
+                  <button class="cjp-btn" onclick="adjustManualTime('second',1)">▲</button>
+                  <span class="cjp-val" id="cjp-s">00</span>
+                  <button class="cjp-btn" onclick="adjustManualTime('second',-1)">▼</button>
+                  <span class="cjp-lbl">DTK</span>
+                </div>
+              </div>
+              <button class="cjp-reset" onclick="resetJamOtomatis()" id="btn-jam-reset">🔄 Reset ke Waktu Sekarang</button>
+              <div class="cjp-badge" id="ci-jam-mode-badge">🔄 Otomatis</div>
+            </div>
+          </div>
           <div class="ci-tgl" id="ci-tgl"></div>
           <span class="ci-lbl">Ketik ID PPS lalu tekan Enter</span>
           <input type="text" class="ci-inp" id="ci-inp" placeholder="Ketik ID PPS di sini..."
@@ -452,6 +520,7 @@ code{font-size:11.5px;background:#f5f5f5;padding:2px 6px;border-radius:4px;font-
           <div class="leg-item"><div class="leg-dot rk-cell I" style="width:20px;height:16px">I</div> Izin</div>
           <div class="leg-item"><div class="leg-dot rk-cell S" style="width:20px;height:16px">S</div> Sakit</div>
           <div class="leg-item"><div class="leg-dot rk-cell kosong" style="width:20px;height:16px">·</div> Tidak ada sesi</div>
+          <div class="leg-item" style="margin-left:auto;color:var(--abu);font-size:11px">📌 Tiap tanggal = 3 kolom jam (J1 · J2 · J3) · Klik sel untuk edit</div>
         </div>
       </div>
     </div>
@@ -529,6 +598,29 @@ document.addEventListener('DOMContentLoaded',()=>{
 // ⚠️ PENTING: Aktifkan Row Level Security (RLS) di semua tabel Supabase Anda!
 // Tabel yang perlu RLS: guru, absensi, kalender_hijriah, sesi_absensi
 // Key anon ini aman selama RLS dikonfigurasi dengan benar.
+//
+// ══════════════════════════════════════════════════════════════
+// MIGRASI WAJIB — jalankan di Supabase SQL Editor:
+// ══════════════════════════════════════════════════════════════
+//
+// 1. Hapus foreign key constraint (jika ada) agar format tanggal bebas:
+//    DO $$
+//    DECLARE r RECORD;
+//    BEGIN
+//      FOR r IN SELECT constraint_name FROM information_schema.table_constraints
+//               WHERE table_name='absensi' AND constraint_type='FOREIGN KEY'
+//      LOOP
+//        EXECUTE 'ALTER TABLE absensi DROP CONSTRAINT ' || r.constraint_name;
+//      END LOOP;
+//    END $$;
+//
+// 2. Tambah kolom jam_ke:
+//    ALTER TABLE sesi_absensi ADD COLUMN IF NOT EXISTS jam_ke int default 1;
+//    ALTER TABLE absensi ADD COLUMN IF NOT EXISTS jam_ke int default 1;
+//
+// Format tanggal_key baru: H-YYYY-MM-DD-J1 / J2 / J3
+// kalender_hijriah.tanggal_sesi tetap H-YYYY-MM-DD (tanpa jam)
+// ══════════════════════════════════════════════════════════════
 //
 // SQL untuk membuat tabel sesi_absensi (jalankan sekali di Supabase SQL Editor):
 // ----------------------------------------------------------------------------
@@ -682,9 +774,10 @@ function renderSesi() {
   if (sesiAktif) {
     box.className = 'sesi-box aktif';
     tglH.textContent = sesiAktif.hijri_label;
-    tglM.textContent = 'Tanggal sesi: ' + (sesiAktif.tanggal_key || '—');
+    const jamKe = sesiAktif.jam_ke || '?';
+    tglM.textContent = `Sesi Jam ${jamKe} · ${sesiAktif.tanggal_key || '—'}`;
     acts.innerHTML = `
-      <div class="sesi-status buka">🟢 Sesi Aktif</div>
+      <div class="sesi-status buka">🟢 Jam ${jamKe} Aktif</div>
       <button class="btn-sesi btn-tutup-sesi" onclick="tutupSesi()">🔒 Tutup Sesi</button>
     `;
     document.getElementById('tgl-top').textContent = sesiAktif.hijri_label;
@@ -711,6 +804,11 @@ function buildBukaSesiForm() {
     <input type="number" class="input-hijri" id="inp-hd" value="${hh.day}" min="1" max="30" placeholder="Tgl">
     <select class="select-hijri" id="inp-hm">${blnOpts}</select>
     <input type="number" class="input-hijri" id="inp-hy" value="${hh.year}" min="1440" max="1460" style="width:65px" placeholder="Tahun">
+    <select class="select-hijri" id="inp-jamke" style="font-size:13px">
+      <option value="1">📚 Jam 1</option>
+      <option value="2">📚 Jam 2</option>
+      <option value="3">📚 Jam 3</option>
+    </select>
     <button class="btn-sesi btn-buka" onclick="bukaSesi()">🟢 Buka Sesi</button>
   `;
 }
@@ -720,10 +818,12 @@ async function bukaSesi() {
   const hd = parseInt(document.getElementById('inp-hd').value)||1;
   const hm = parseInt(document.getElementById('inp-hm').value)||1;
   const hy = parseInt(document.getElementById('inp-hy').value)||1446;
+  const jamKe = parseInt(document.getElementById('inp-jamke').value)||1;
   if(hd<1||hd>30||hm<1||hm>12||hy<1400){ toast('Tanggal Hijriah tidak valid!','err'); return; }
 
-  const tglKey = `H-${hy}-${String(hm).padStart(2,'0')}-${String(hd).padStart(2,'0')}`;
-  const label = hijriLabel(hd, hm, hy);
+  const tglBase = `H-${hy}-${String(hm).padStart(2,'0')}-${String(hd).padStart(2,'0')}`;
+  const tglKey  = tglBase + `-J${jamKe}`;
+  const label   = hijriLabel(hd, hm, hy) + ` · Jam ${jamKe}`;
 
   // Tutup semua sesi aktif dulu (hanya boleh 1 sesi aktif)
   await sb.from('sesi_absensi').update({ is_aktif: false }).eq('is_aktif', true);
@@ -733,6 +833,7 @@ async function bukaSesi() {
     tanggal_key: tglKey,
     hijri_label: label,
     hijri_day: hd, hijri_month: hm, hijri_year: hy,
+    jam_ke: jamKe,
     is_aktif: true,
     dibuka_pada: today()
   }, { onConflict: 'tanggal_key' }).select().single();
@@ -743,16 +844,17 @@ async function bukaSesi() {
   localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
 
   // Simpan juga ke kalender_hijriah untuk keperluan rekap
+  // tanggal_sesi = tglBase (tanpa -J*) agar 3 jam tetap dalam 1 hari di kalender
   const { error: kalErr } = await sb.from('kalender_hijriah').upsert({
-    tanggal_sesi: tglKey,
+    tanggal_sesi: tglBase,
     hijri_day: hd, hijri_month: hm, hijri_year: hy,
-    hijri_label: label
+    hijri_label: hijriLabel(hd, hm, hy)
   }, { onConflict: 'tanggal_sesi' });
   if (kalErr) console.warn('Kalender hijriah save error:', kalErr.message);
 
   renderSesi();
   updateSideStats();
-  toast('✅ Sesi absensi ' + label + ' dibuka!', 'suc');
+  toast('✅ Sesi ' + label + ' dibuka!', 'suc');
 }
 
 async function tutupSesi() {
@@ -805,7 +907,87 @@ document.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('f-bulan-hijri').value = hh.month;
   document.getElementById('f-tahun-hijri').value = hh.year;
 
-  setInterval(()=>{ document.getElementById('ci-jam').textContent = fmtJam(new Date()); }, 1000);
+  // ===== JAM MANUAL =====
+  let manualTime = null; // null = mode otomatis
+  let jamInterval = null;
+
+  function pad2(n){ return String(n).padStart(2,'0'); }
+
+  function updatePopoverVals(t) {
+    const h = document.getElementById('cjp-h');
+    const m = document.getElementById('cjp-m');
+    const s = document.getElementById('cjp-s');
+    if(h) h.textContent = pad2(t.getHours());
+    if(m) m.textContent = pad2(t.getMinutes());
+    if(s) s.textContent = pad2(t.getSeconds());
+  }
+
+  function tickJam() {
+    const t = manualTime !== null ? manualTime : new Date();
+    document.getElementById('ci-jam').textContent = fmtJam(t);
+    if (manualTime !== null) {
+      manualTime = new Date(manualTime.getTime() + 1000);
+      updatePopoverVals(manualTime);
+    }
+  }
+
+  window.toggleJamPopover = function(e) {
+    e.stopPropagation();
+    const pop = document.getElementById('ci-jam-popover');
+    const btn = document.getElementById('btn-jam-setting');
+    const isOpen = pop.classList.contains('show');
+    if (!isOpen) {
+      // Sync nilai tampilan ke waktu saat ini
+      const t = manualTime !== null ? manualTime : new Date();
+      updatePopoverVals(t);
+    }
+    pop.classList.toggle('show');
+    btn.classList.toggle('active');
+  };
+
+  // Tutup popover saat klik di luar
+  document.addEventListener('click', function(e) {
+    const pop = document.getElementById('ci-jam-popover');
+    const btn = document.getElementById('btn-jam-setting');
+    if (pop && pop.classList.contains('show') && !pop.contains(e.target) && e.target !== btn) {
+      pop.classList.remove('show');
+      if(btn) btn.classList.remove('active');
+    }
+  });
+
+  window.adjustManualTime = function(unit, delta) {
+    if (manualTime === null) manualTime = new Date();
+    const d = new Date(manualTime);
+    if (unit === 'hour')   d.setHours(d.getHours() + delta);
+    if (unit === 'minute') d.setMinutes(d.getMinutes() + delta);
+    if (unit === 'second') d.setSeconds(d.getSeconds() + delta);
+    manualTime = d;
+    document.getElementById('ci-jam').textContent = fmtJam(manualTime);
+    updatePopoverVals(manualTime);
+    setJamModeBadge('manual');
+  };
+
+  window.resetJamOtomatis = function() {
+    manualTime = null;
+    setJamModeBadge('otomatis');
+    const now = new Date();
+    updatePopoverVals(now);
+  };
+
+  function setJamModeBadge(mode) {
+    const badge = document.getElementById('ci-jam-mode-badge');
+    if (!badge) return;
+    if (mode === 'manual') {
+      badge.textContent = '⏱ Mode Manual';
+      badge.className = 'cjp-badge manual';
+    } else {
+      badge.textContent = '🔄 Mode Otomatis';
+      badge.className = 'cjp-badge';
+    }
+  }
+
+  jamInterval = setInterval(tickJam, 1000);
+  setJamModeBadge('otomatis');
   connect(true);
 });
 
@@ -918,23 +1100,39 @@ async function doCheckin(){
 
   const tgl = getTanggalSesi();
   if(!tgl){ showFb('err','⚠️ Sesi Belum Dibuka','Buka sesi absensi dulu!','notfound'); inp.value=''; setTimeout(clearFb,3500); return; }
+
+  // Pastikan sesi ada di sesi_absensi (jaga-jaga FK constraint)
+  await sb.from('sesi_absensi').upsert({
+    tanggal_key: tgl,
+    hijri_label: sesiAktif.hijri_label,
+    hijri_day: sesiAktif.hijri_day,
+    hijri_month: sesiAktif.hijri_month,
+    hijri_year: sesiAktif.hijri_year,
+    jam_ke: sesiAktif.jam_ke || 1,
+    is_aktif: true,
+    dibuka_pada: today()
+  }, { onConflict: 'tanggal_key', ignoreDuplicates: true });
+
   const {data:exist}=await sb.from('absensi').select('id,status').eq('id_pps',idpps).eq('tanggal',tgl).maybeSingle();
   if(exist){
     const lbl={H:'Hadir',A:'Alpha',I:'Izin',S:'Sakit'};
     showFb('err',guru.nama,guru.dom+' · '+guru.tingkatan,'sudah');
-    document.getElementById('fb-dt').textContent = `Status ${sesiAktif.hijri_label}: ${lbl[exist.status]||exist.status}`;
+    document.getElementById('fb-dt').textContent = `${sesiAktif.hijri_label}: ${lbl[exist.status]||exist.status}`;
     inp.value=''; setTimeout(clearFb,3500); return;
   }
 
-  const ket = 'Check-in mandiri · ' + sesiAktif.hijri_label;
+  const jamKe = sesiAktif.jam_ke || 1;
+  const ket = `Check-in Jam ${jamKe} · ` + sesiAktif.hijri_label;
   const {error}=await sb.from('absensi').insert({
     id_pps:idpps, tanggal:tgl, status:'H', keterangan:ket,
-    hijri_label: sesiAktif.hijri_label
+    hijri_label: sesiAktif.hijri_label,
+    jam_ke: jamKe
   });
   if(error){ showFb('err','❌ Gagal',error.message,'notfound'); }
   else {
     showFb('ok',guru.nama,guru.dom+' · '+guru.tingkatan,'hadir');
-    logHariIni.unshift({nama:guru.nama,dom:guru.dom,waktu:new Date()});
+    document.getElementById('fb-dt').textContent = `✅ Tercatat Hadir Jam ${jamKe}`;
+    logHariIni.unshift({nama:guru.nama,dom:guru.dom,waktu:new Date(),jamKe});
     renderLog(); updateSideStats();
   }
   inp.value=''; setTimeout(()=>{ clearFb(); document.getElementById('ci-inp').focus(); },3500);
@@ -957,11 +1155,11 @@ function renderLog(){
   el.innerHTML=logHariIni.slice(0,12).map(l=>`
     <div class="log-item">
       <div class="log-av">${l.nama.charAt(0)}</div>
-      <div><div class="log-nm">${l.nama}</div><div class="log-sb">${l.dom} · ${fmtWkt(l.waktu)}</div></div>
+      <div><div class="log-nm">${l.nama}</div><div class="log-sb">${l.dom} · ${fmtWkt(l.waktu)} · <span style="font-weight:700;color:var(--emas)">Jam ${l.jamKe||'?'}</span></div></div>
     </div>`).join('');
 }
 
-// FIX: Alpha = total guru - yang hadir (bukan yang ber-status 'A' di DB)
+// FIX: Alpha = total guru - yang hadir (per sesi jam aktif)
 async function updateSideStats(){
   if(!sb) return;
   const tgl=getTanggalSesi();
@@ -1021,7 +1219,7 @@ async function loadDashboard(){
   </tr>`).join('');
 }
 
-// ===== REKAP BULANAN — BERBASIS SESI HIJRIAH =====
+// ===== REKAP BULANAN — 3 JAM PER HARI =====
 async function loadRekap(){
   if(!sb){ toast('Hubungkan Supabase!','err'); return; }
   const hBulan = parseInt(document.getElementById('f-bulan-hijri').value);
@@ -1047,8 +1245,7 @@ async function loadRekap(){
   </td></tr>`;
   sub.textContent = '';
 
-  // 1. Ambil semua sesi (kalender_hijriah) untuk bulan & tahun Hijriah ini
-  //    tanggal_sesi di sini sebenarnya adalah tglKey format H-YYYY-MM-DD
+  // 1. Ambil semua sesi di kalender_hijriah bulan ini (1 row per hari)
   const {data:sesiList, error:sesiErr} = await sb
     .from('kalender_hijriah')
     .select('tanggal_sesi,hijri_day,hijri_label,hijri_month,hijri_year')
@@ -1057,33 +1254,55 @@ async function loadRekap(){
     .order('hijri_day', {ascending: true});
   if(sesiErr){ toast('Gagal ambil kalender: '+sesiErr.message,'err'); tbody.innerHTML=''; return; }
 
-  // 2. Bangun 30 kolom hari untuk sebulan penuh (1–30)
-  //    Kolom yang ada sesinya = ada data di sesiList, kosong = belum ada sesi
+  // 2. Ambil sesi_absensi untuk tahu jam mana yg pernah dibuka
+  //    tanggal_key format H-YYYY-MM-DD-J1/J2/J3
+  const tglBaseArr = (sesiList||[]).map(s=>s.tanggal_sesi); // e.g. H-1446-09-01
+  let sesiJamList = [];
+  if(tglBaseArr.length > 0){
+    // Ambil semua sesi_absensi yang tanggal_key-nya mengandung hari-hari tsb
+    const { data: sj } = await sb.from('sesi_absensi')
+      .select('tanggal_key,jam_ke,hijri_label')
+      .in('tanggal_key', [
+        ...tglBaseArr.map(t=>t+'-J1'),
+        ...tglBaseArr.map(t=>t+'-J2'),
+        ...tglBaseArr.map(t=>t+'-J3'),
+      ]);
+    sesiJamList = sj || [];
+  }
+
+  // 3. Bangun struktur per hari: { hijri_day, tglBase, jam:[{jamKe, tglKey, adaSesi}] }
   const kalData = [];
   for(let i=1; i<=30; i++){
     const s = (sesiList||[]).find(x=>x.hijri_day===i);
+    const tglBase = s ? s.tanggal_sesi : `H-${hTahun}-${String(hBulan).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+    const jam = [1,2,3].map(j=>({
+      jamKe: j,
+      tglKey: tglBase+`-J${j}`,
+      adaSesi: sesiJamList.some(sj=>sj.tanggal_key === tglBase+`-J${j}`)
+    }));
     kalData.push({
       hijri_day: i,
       hijri_label: `${i} ${BLN_H[hBulan]} ${hTahun}`,
-      tanggal_key: s ? s.tanggal_sesi : null, // null = belum ada sesi
-      ada_sesi: !!s
+      tglBase,
+      adaHari: !!s,    // ada di kalender = hari ini pernah ada sesi apapun
+      jam
     });
   }
 
-  // 3. Ambil absensi untuk semua tglKey yang ada sesinya
-  const tglArr = kalData.map(k=>k.tanggal_key).filter(Boolean);
+  // 4. Ambil semua absensi untuk semua tglKey yg ada sesinya
+  const semuaTglKey = kalData.flatMap(k=>k.jam.filter(j=>j.adaSesi).map(j=>j.tglKey));
   let absenData = [];
-  if(tglArr.length > 0) {
+  if(semuaTglKey.length > 0){
     const absenRes = await sb
       .from('absensi')
-      .select('id_pps,status,tanggal,guru(nama,dom,tingkatan)')
-      .in('tanggal', tglArr)
+      .select('id_pps,status,tanggal,jam_ke,keterangan,guru(nama,dom,tingkatan)')
+      .in('tanggal', semuaTglKey)
       .order('tanggal');
     if(absenRes.error){ toast('Gagal ambil absensi: '+absenRes.error.message,'err'); tbody.innerHTML=''; return; }
     absenData = absenRes.data || [];
   }
 
-  // 4. Bangun map guru
+  // 5. Bangun map guru: tgl[tglKey] = status
   const map={};
   daftarGuru.forEach(g=>{
     map[g.id_pps]={nama:g.nama, dom:g.dom||'—', tingkatan:g.tingkatan||'—', idpps:g.id_pps, tgl:{}};
@@ -1096,26 +1315,27 @@ async function loadRekap(){
     map[a.id_pps].tgl[a.tanggal]=a.status;
   });
 
-  // 5. Untuk kolom yang ADA sesi: jika guru tidak absen → Alpha
-  //    Untuk kolom yang TIDAK ada sesi: biarkan kosong (undefined)
+  // 6. Isi Alpha untuk sesi yang ada tapi guru tidak absen
   kalData.forEach(k=>{
-    if(k.ada_sesi && k.tanggal_key){
-      Object.values(map).forEach(r=>{
-        if(!r.tgl[k.tanggal_key]) r.tgl[k.tanggal_key]='A';
-      });
-    }
+    k.jam.forEach(j=>{
+      if(j.adaSesi){
+        Object.values(map).forEach(r=>{
+          if(!r.tgl[j.tglKey]) r.tgl[j.tglKey]='A';
+        });
+      }
+    });
   });
 
   rekapHariArr = kalData;
   rekapData = Object.entries(map).sort((a,b)=>a[1].nama.localeCompare(b[1].nama));
 
-  // 6. Render header tabel
-  const thHariNum = kalData.map(k=>`<th class="rk-th-hari" title="${k.hijri_label}"${!k.ada_sesi?' style="opacity:.35"':''}>${k.hijri_day}</th>`).join('');
-  const thNamaHari = kalData.map(k=>`<th class="rk-th-namahari"${!k.ada_sesi?' style="opacity:.35"':''}>${k.ada_sesi?'✓':'·'}</th>`).join('');
+  // 7. Render header tabel
+  // Baris 1: Nomor hari (colspan 3 per hari) + kiri + stat
+  // Baris 2: J1 J2 J3 per hari
   const colKiri = `
     <th class="rk-th-kiri center" rowspan="2">#</th>
     <th class="rk-th-kiri" rowspan="2">ID PPS</th>
-    <th class="rk-th-kiri" rowspan="2" style="min-width:160px">Nama Guru</th>
+    <th class="rk-th-kiri" rowspan="2" style="min-width:150px">Nama Guru</th>
     <th class="rk-th-kiri" rowspan="2">Dom</th>
     <th class="rk-th-kiri" rowspan="2">Tingkat</th>`;
   const colStat = `
@@ -1124,15 +1344,28 @@ async function loadRekap(){
     <th class="rk-th-stat" rowspan="2" style="color:#f57f17">I</th>
     <th class="rk-th-stat" rowspan="2" style="color:#1565c0">S</th>
     <th class="rk-th-stat" rowspan="2">%</th>`;
+
+  const thHariNum = kalData.map(k=>{
+    const opaq = !k.adaHari ? ' style="opacity:.3"' : '';
+    return `<th class="rk-th-hari" colspan="3"${opaq} title="${k.hijri_label}">${k.hijri_day}</th>`;
+  }).join('');
+
+  const thJam = kalData.map(k=>
+    k.jam.map(j=>{
+      const active = j.adaSesi ? '' : ' style="opacity:.3"';
+      return `<th class="rk-th-namahari"${active}>J${j.jamKe}</th>`;
+    }).join('')
+  ).join('');
+
   thead.innerHTML = `
     <tr>${colKiri}${thHariNum}${colStat}</tr>
-    <tr>${thNamaHari}</tr>`;
+    <tr>${thJam}</tr>`;
 
-  const jmlSesi = kalData.filter(k=>k.ada_sesi).length;
+  const jmlSesi = semuaTglKey.length;
   renderRekapRows();
   judul.textContent = bulanLabel + ' (Hijriah)';
   judul.style.display='block';
-  sub.textContent = jmlSesi + ' sesi · ' + rekapData.length + ' guru';
+  sub.textContent = jmlSesi + ' sesi jam · ' + rekapData.length + ' guru';
   if(jmlSesi===0) sub.textContent += ' · Belum ada sesi di bulan ini';
   btnExp.style.display='inline-flex';
 }
@@ -1144,36 +1377,51 @@ function renderRekapRows(filter=''){
     const q=filter.toLowerCase();
     rows=rows.filter(([,r])=>r.nama.toLowerCase().includes(q)||String(r.idpps).includes(q));
   }
+  const totalCols = 5 + (30*3) + 5;
   if(!rows.length){
-    tbody.innerHTML='<tr><td colspan="'+(5+rekapHariArr.length+5)+'"><div class="empty"><div class="ic">🔍</div><p>Tidak ada guru yang sesuai pencarian</p></div></td></tr>';
+    tbody.innerHTML=`<tr><td colspan="${totalCols}"><div class="empty"><div class="ic">🔍</div><p>Tidak ada guru yang sesuai pencarian</p></div></td></tr>`;
     return;
   }
+
+  // Semua tglKey yg ada sesi (untuk hitung statistik)
+  const semuaSesiKeys = rekapHariArr.flatMap(k=>k.jam.filter(j=>j.adaSesi).map(j=>j.tglKey));
+
   tbody.innerHTML = rows.map(([idpps,r],i)=>{
+    // Bangun sel per hari (tiap hari = 3 sel J1 J2 J3)
     const kalCells = rekapHariArr.map(k=>{
-      if(!k.ada_sesi){
-        // Belum ada sesi — tampilkan sel abu-abu tidak bisa diklik
-        return `<td style="text-align:center;padding:6px 4px"><span class="rk-cell kosong" title="${k.hijri_label}: tidak ada sesi" style="cursor:default">·</span></td>`;
-      }
-      const st = r.tgl[k.tanggal_key];
-      const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||'·';
-      return `<td style="text-align:center;padding:6px 4px">
-        <span class="rk-cell ${st||'kosong'}" title="${k.hijri_label}: ${st||'—'}" style="cursor:pointer" onclick="editRekapStatus('${r.idpps}','${k.tanggal_key}','${st||'A'}',this)">${ic}</span>
-      </td>`;
+      return k.jam.map(j=>{
+        if(!j.adaSesi){
+          return `<td class="rk-td-jam kosong" title="${k.hijri_label} Jam ${j.jamKe}: tidak ada sesi">·</td>`;
+        }
+        const st = r.tgl[j.tglKey];
+        const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||'·';
+        const cls={H:'H',A:'A',I:'I',S:'S'}[st]||'kosong';
+        return `<td class="rk-td-jam ${cls}" title="${k.hijri_label} Jam ${j.jamKe}: ${st||'—'}" style="cursor:pointer" onclick="editRekapStatus('${r.idpps}','${j.tglKey}','${st||'A'}',this)">${ic}</td>`;
+      }).join('');
     }).join('');
-    // Hitung hanya dari kolom yang ada sesi
-    const sesiKeys = rekapHariArr.filter(k=>k.ada_sesi).map(k=>k.tanggal_key);
-    const H=sesiKeys.filter(k=>r.tgl[k]==='H').length;
-    const A=sesiKeys.filter(k=>r.tgl[k]==='A').length;
-    const I=sesiKeys.filter(k=>r.tgl[k]==='I').length;
-    const S=sesiKeys.filter(k=>r.tgl[k]==='S').length;
+
+    // Statistik
+    const H=semuaSesiKeys.filter(k=>r.tgl[k]==='H').length;
+    const A=semuaSesiKeys.filter(k=>r.tgl[k]==='A').length;
+    const I=semuaSesiKeys.filter(k=>r.tgl[k]==='I').length;
+    const S=semuaSesiKeys.filter(k=>r.tgl[k]==='S').length;
     const tot=H+A+I+S;
     const pct=tot>0?Math.round(H/tot*100):0;
     const pc=pct>=80?'#2e7d32':pct>=60?'#f57f17':'#c62828';
     const barW=Math.max(3,Math.round(pct*40/100));
+
+    // Catatan jam hadir: rangkuman per hari
+    const catatanHadir = rekapHariArr
+      .filter(k=>k.jam.some(j=>j.adaSesi && r.tgl[j.tglKey]==='H'))
+      .map(k=>{
+        const jamHadir = k.jam.filter(j=>j.adaSesi && r.tgl[j.tglKey]==='H').map(j=>`J${j.jamKe}`).join(',');
+        return `${k.hijri_day}(${jamHadir})`;
+      }).join(' ');
+
     return `<tr>
       <td class="rk-td center">${i+1}</td>
       <td class="rk-td code">${r.idpps}</td>
-      <td class="rk-td nama">${r.nama}</td>
+      <td class="rk-td nama" title="Hadir: ${catatanHadir||'—'}">${r.nama}${catatanHadir?`<div class="rk-catatan-jam">📋 ${catatanHadir}</div>`:''}</td>
       <td class="rk-td">${r.dom}</td>
       <td class="rk-td">${r.tingkatan}</td>
       ${kalCells}
@@ -1220,18 +1468,27 @@ function editRekapStatus(idpps, tanggalKey, status, el) {
     const newStatus = sel.value;
     sel.remove();
     if(!window.sb){ toast('Supabase belum siap','err'); return; }
-    // Cek apakah sudah ada absensi
+    // Cari hijri_label dari rekapHariArr
+    let hijriLabelVal = '';
+    let jamKeVal = 1;
+    rekapHariArr.forEach(k=>{
+      k.jam.forEach(j=>{
+        if(j.tglKey===tanggalKey){
+          hijriLabelVal = k.hijri_label + ' · Jam ' + j.jamKe;
+          jamKeVal = j.jamKe;
+        }
+      });
+    });
     const {data:exist} = await sb.from('absensi').select('id').eq('id_pps',idpps).eq('tanggal',tanggalKey).maybeSingle();
     if(exist){
       const {error} = await sb.from('absensi').update({status:newStatus}).eq('id',exist.id);
       if(error) toast('Gagal update: '+error.message,'err');
       else toast('Berhasil diupdate!','suc');
     }else{
-      // Ambil hijri_label dari rekapHariArr
-      const hari = rekapHariArr.find(k=>k.tanggal_key===tanggalKey);
       const {error} = await sb.from('absensi').insert({
         id_pps:idpps, tanggal:tanggalKey, status:newStatus,
-        hijri_label: hari ? hari.hijri_label : '',
+        hijri_label: hijriLabelVal,
+        jam_ke: jamKeVal,
         keterangan:'Edit manual rekap'
       });
       if(error) toast('Gagal tambah: '+error.message,'err');
@@ -1253,23 +1510,31 @@ function exportRekapExcel(){
   const hTahun = parseInt(document.getElementById('f-tahun-hijri').value);
   const namaFile = 'Rekap_' + BLN_H[hBulan] + '_' + hTahun + 'H.xlsx';
 
-  const headers = ['No','ID PPS','Nama Guru','Dom','Tingkatan',
-    ...rekapHariArr.map(k=> k.ada_sesi ? String(k.hijri_day) : k.hijri_day+'*'),
+  // Header baris 1: merge per hari
+  const hdr1 = ['No','ID PPS','Nama Guru','Dom','Tingkatan',
+    ...rekapHariArr.flatMap(k=>[String(k.hijri_day),'','']),
     'H','A','I','S','%'];
+  // Header baris 2: J1 J2 J3
+  const hdr2 = ['','','','','',
+    ...rekapHariArr.flatMap(k=>['J1','J2','J3']),
+    '','','','',''];
 
-  const rows = rekapData.map(([idpps,r],i)=>{
-    const sesiKeys = rekapHariArr.filter(k=>k.ada_sesi).map(k=>k.tanggal_key);
-    const H=sesiKeys.filter(k=>r.tgl[k]==='H').length;
-    const A=sesiKeys.filter(k=>r.tgl[k]==='A').length;
-    const I=sesiKeys.filter(k=>r.tgl[k]==='I').length;
-    const S=sesiKeys.filter(k=>r.tgl[k]==='S').length;
+  const semuaSesiKeys = rekapHariArr.flatMap(k=>k.jam.filter(j=>j.adaSesi).map(j=>j.tglKey));
+
+  const rows = rekapData.map(([,r],i)=>{
+    const H=semuaSesiKeys.filter(k=>r.tgl[k]==='H').length;
+    const A=semuaSesiKeys.filter(k=>r.tgl[k]==='A').length;
+    const I=semuaSesiKeys.filter(k=>r.tgl[k]==='I').length;
+    const S=semuaSesiKeys.filter(k=>r.tgl[k]==='S').length;
     const tot=H+A+I+S;
     const pct=tot>0?Math.round(H/tot*100):0;
-    const kalVals=rekapHariArr.map(k=>k.ada_sesi ? (r.tgl[k.tanggal_key]||'A') : '');
-    return [i+1,r.idpps,r.nama,r.dom,r.tingkatan,...kalVals,H,A,I,S,pct+'%'];
+    const jamVals = rekapHariArr.flatMap(k=>
+      k.jam.map(j=> j.adaSesi ? (r.tgl[j.tglKey]||'A') : '')
+    );
+    return [i+1,r.idpps,r.nama,r.dom,r.tingkatan,...jamVals,H,A,I,S,pct+'%'];
   });
 
-  const ws = XLSX.utils.aoa_to_sheet([headers,...rows]);
+  const ws = XLSX.utils.aoa_to_sheet([hdr1,hdr2,...rows]);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, BLN_H[hBulan]+' '+hTahun);
   XLSX.writeFile(wb, namaFile);
