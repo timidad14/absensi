@@ -188,8 +188,9 @@ tr:hover td{background:#fdf8f0}
 .btn-buka:hover{background:var(--emas-muda)}
 .btn-tutup-sesi{background:rgba(198,40,40,.25);color:#ef9a9a;border:1px solid rgba(198,40,40,.4)!important}
 .btn-tutup-sesi:hover{background:rgba(198,40,40,.4)}
-.input-hijri{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-family:'Amiri',serif;outline:none;width:52px;text-align:center}
+.input-hijri{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;font-family:'Amiri',serif;outline:none;width:52px;text-align:center;-moz-appearance:textfield;appearance:textfield}
 .input-hijri:focus{border-color:var(--emas)}
+.input-hijri::-webkit-outer-spin-button,.input-hijri::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .select-hijri{background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 12px;color:#fff;font-size:13px;outline:none;cursor:pointer}
 .select-hijri option{background:#1a3a2a;color:#fff}
 .select-hijri:focus{border-color:var(--emas)}
@@ -808,9 +809,13 @@ function closeSidebar() {
 // ===== HIJRIAH UTILS =====
 function gregorianToHijri(year, month, day) {
   try {
-    const d = new Date(year, month-1, day);
+    // Pakai jam 12:00:00 UTC agar tidak terkena efek timezone shift
+    // (new Date(y,m,d) = jam 00:00 lokal = jam 17:00 UTC hari sebelumnya di WIB)
+    // yang menyebabkan konversi Hijriah meleset 1 hari
+    const d = new Date(Date.UTC(year, month-1, day, 12, 0, 0));
     const hParts = new Intl.DateTimeFormat('id-u-ca-islamic-umalqura', {
-      day:'numeric', month:'numeric', year:'numeric'
+      day:'numeric', month:'numeric', year:'numeric',
+      timeZone: 'UTC'
     }).formatToParts(d);
     let hd=1,hm=1,hy=1446;
     hParts.forEach(p=>{
@@ -907,6 +912,9 @@ function startSesiPoll() {
     await loadSesi();
     const sekarang = sesiAktif ? sesiAktif.tanggal_key : null;
     if (sebelumnya !== sekarang) {
+      // Sesi berganti — reset log & stats agar tidak terbawa dari sesi lama
+      logHariIni = [];
+      renderLog();
       updateSideStats();
       if (sekarang) toast('🔄 Sesi diperbarui: ' + sesiAktif.hijri_label, '');
       else toast('🔒 Sesi telah ditutup dari perangkat lain.', '');
@@ -955,32 +963,37 @@ function renderSesi() {
     `;
     document.getElementById('tgl-top').textContent = sesiAktif.hijri_label;
     document.getElementById('ci-tgl').textContent = sesiAktif.hijri_label + ' · ' + (sesiAktif.tanggal_key || '');
+    // Reset counter tampilan dulu ke 0, baru query actual
+    const elH = document.getElementById('ci-hadir');
+    const elA = document.getElementById('ci-alpha');
+    if(elH) elH.textContent = '0';
+    if(elA) elA.textContent = daftarGuru.length || '—';
   } else {
     box.className = 'sesi-box';
     tglH.textContent = 'Belum ada sesi aktif';
     tglM.textContent = 'Tentukan tanggal Hijriah lalu buka sesi';
     acts.innerHTML = buildBukaSesiForm();
-    const hh = todayHijri();
-    setTimeout(()=>{
-      const ed=document.getElementById('inp-hd'), em=document.getElementById('inp-hm'), ey=document.getElementById('inp-hy');
-      if(ed) ed.value=hh.day;
-      if(em) em.value=hh.month;
-      if(ey) ey.value=hh.year;
-    }, 50);
   }
 }
 
 function buildBukaSesiForm() {
+  // Gunakan pengaturan terakhir jika ada, fallback ke hari ini
+  let last = null;
+  try { last = JSON.parse(localStorage.getItem('sesi_last_setting')||'null'); } catch(e){}
   const hh = todayHijri();
-  const blnOpts = BLN_H.slice(1).map((b,i)=>`<option value="${i+1}"${i+1===hh.month?' selected':''}>${b}</option>`).join('');
+  const hd   = last ? last.hd   : hh.day;
+  const hm   = last ? last.hm   : hh.month;
+  const hy   = last ? last.hy   : hh.year;
+  const jamKe = last ? last.jamKe : 1;
+  const blnOpts = BLN_H.slice(1).map((b,i)=>`<option value="${i+1}"${i+1===hm?' selected':''}>${b}</option>`).join('');
   return `
-    <input type="number" class="input-hijri" id="inp-hd" value="${hh.day}" min="1" max="30" placeholder="Tgl">
+    <input type="number" class="input-hijri" id="inp-hd" value="${hd}" min="1" max="30" placeholder="Tgl">
     <select class="select-hijri" id="inp-hm">${blnOpts}</select>
-    <input type="number" class="input-hijri" id="inp-hy" value="${hh.year}" min="1440" max="1460" style="width:65px" placeholder="Tahun">
+    <input type="number" class="input-hijri" id="inp-hy" value="${hy}" min="1440" max="1460" style="width:65px" placeholder="Tahun">
     <select class="select-hijri" id="inp-jamke" style="font-size:13px">
-      <option value="1">📚 Jam 1</option>
-      <option value="2">📚 Jam 2</option>
-      <option value="3">📚 Jam 3</option>
+      <option value="1"${jamKe===1?' selected':''}>📚 Jam 1</option>
+      <option value="2"${jamKe===2?' selected':''}>📚 Jam 2</option>
+      <option value="3"${jamKe===3?' selected':''}>📚 Jam 3</option>
     </select>
     <button class="btn-sesi btn-buka" onclick="bukaSesi()">🟢 Buka Sesi</button>
   `;
@@ -1017,6 +1030,11 @@ async function bukaSesi() {
 
   sesiAktif = sesiBaru;
   localStorage.setItem('sesi_absensi', JSON.stringify(sesiAktif));
+  // Simpan pengaturan terakhir agar form tidak reset ke hari ini setelah sesi ditutup
+  localStorage.setItem('sesi_last_setting', JSON.stringify({ hd, hm, hy, jamKe }));
+  // Reset log & stats agar tidak terbawa dari sesi sebelumnya
+  logHariIni = [];
+  renderLog();
 
   // Simpan juga ke kalender_hijriah untuk keperluan rekap
   // tanggal_sesi = tglBase (tanpa -J*) agar 3 jam tetap dalam 1 hari di kalender
@@ -1038,13 +1056,16 @@ async function tutupSesi() {
 
   if(sb && daftarGuru.length > 0){
     const tgl = sesiAktif.tanggal_key;
+    // Ambil semua id_pps yang sudah punya record di sesi ini (status apapun: H/I/S/A)
     const {data:sudahAbsen} = await sb.from('absensi').select('id_pps').eq('tanggal', tgl);
     const sudahIds = new Set((sudahAbsen||[]).map(a=>a.id_pps));
+    // Hanya guru yang SAMA SEKALI belum ada record yang di-alpha
     const alphaList = daftarGuru
       .filter(g => !sudahIds.has(g.id_pps))
       .map(g => ({
         id_pps: g.id_pps, tanggal: tgl, status: 'A',
         hijri_label: sesiAktif.hijri_label,
+        jam_ke: sesiAktif.jam_ke || 1,
         keterangan: 'Auto-alpha saat sesi ditutup · ' + sesiAktif.hijri_label
       }));
     if(alphaList.length > 0){
@@ -1344,11 +1365,14 @@ async function doCheckin(){
     dibuka_pada: today()
   }, { onConflict: 'tanggal_key', ignoreDuplicates: true });
 
-  const {data:exist}=await sb.from('absensi').select('id,status').eq('id_pps',idpps).eq('tanggal',tgl).maybeSingle();
+  // Cek duplikat: hanya tolak jika sudah ada di sesi JAM yang SAMA (tanggal_key identik)
+  // tanggal_key sudah unik per jam (H-YYYY-MM-DD-J1/J2/J3) jadi query ini sudah benar
+  const {data:exist}=await sb.from('absensi').select('id,status,jam_ke').eq('id_pps',idpps).eq('tanggal',tgl).maybeSingle();
   if(exist){
     const lbl={H:'Hadir',A:'Alpha',I:'Izin',S:'Sakit'};
+    const jamKeLbl = exist.jam_ke ? ` (Jam ${exist.jam_ke})` : '';
     showFb('err',guru.nama,guru.dom+' · '+guru.tingkatan,'sudah');
-    document.getElementById('fb-dt').textContent = `${sesiAktif.hijri_label}: ${lbl[exist.status]||exist.status}`;
+    document.getElementById('fb-dt').textContent = `Sudah tercatat ${lbl[exist.status]||exist.status}${jamKeLbl} di sesi ini`;
     inp.value=''; setTimeout(clearFb,3500); return;
   }
 
@@ -1492,7 +1516,7 @@ async function loadRekap(){
   if(tglBaseArr.length > 0){
     // Ambil semua sesi_absensi yang tanggal_key-nya mengandung hari-hari tsb
     const { data: sj } = await sb.from('sesi_absensi')
-      .select('tanggal_key,jam_ke,hijri_label')
+      .select('tanggal_key,jam_ke,hijri_label,is_aktif')
       .in('tanggal_key', [
         ...tglBaseArr.map(t=>t+'-J1'),
         ...tglBaseArr.map(t=>t+'-J2'),
@@ -1506,11 +1530,18 @@ async function loadRekap(){
   for(let i=1; i<=30; i++){
     const s = (sesiList||[]).find(x=>x.hijri_day===i);
     const tglBase = s ? s.tanggal_sesi : `H-${hTahun}-${String(hBulan).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-    const jam = [1,2,3].map(j=>({
-      jamKe: j,
-      tglKey: tglBase+`-J${j}`,
-      adaSesi: sesiJamList.some(sj=>sj.tanggal_key === tglBase+`-J${j}`)
-    }));
+    const jam = [1,2,3].map(j=>{
+      const tglKey = tglBase+`-J${j}`;
+      const sesiRecord = sesiJamList.find(sj=>sj.tanggal_key === tglKey);
+      // Juga cek apakah ini sesi yang sedang aktif sekarang (mungkin belum ada di DB kalau baru dibuka)
+      const isSesiAktifSekarang = sesiAktif && sesiAktif.tanggal_key === tglKey;
+      return {
+        jamKe: j,
+        tglKey,
+        adaSesi: !!sesiRecord || isSesiAktifSekarang,
+        masihAktif: (sesiRecord && sesiRecord.is_aktif) || isSesiAktifSekarang
+      };
+    });
     kalData.push({
       hijri_day: i,
       hijri_label: `${i} ${BLN_H[hBulan]} ${hTahun}`,
@@ -1546,14 +1577,17 @@ async function loadRekap(){
     map[a.id_pps].tgl[a.tanggal]=a.status;
   });
 
-  // 6. Isi Alpha untuk sesi yang ada tapi guru tidak absen
+  // 6. Isi Alpha untuk sesi yang sudah DITUTUP tapi guru tidak absen
+  //    Sesi yang masih aktif (is_aktif=true) TIDAK diisi apapun — guru belum tentu absen
   kalData.forEach(k=>{
     k.jam.forEach(j=>{
-      if(j.adaSesi){
+      if(j.adaSesi && !j.masihAktif){
+        // Sesi sudah ditutup → yang tidak ada record = Alpha
         Object.values(map).forEach(r=>{
           if(!r.tgl[j.tglKey]) r.tgl[j.tglKey]='A';
         });
       }
+      // Sesi masih aktif → tampilkan kosong (·) bukan Alpha
     });
   });
 
@@ -1614,8 +1648,8 @@ function renderRekapRows(filter=''){
     return;
   }
 
-  // Semua tglKey yg ada sesi (untuk hitung statistik)
-  const semuaSesiKeys = rekapHariArr.flatMap(k=>k.jam.filter(j=>j.adaSesi).map(j=>j.tglKey));
+  // Hanya hitung statistik dari sesi yang SUDAH DITUTUP (bukan yang masih aktif)
+  const semuaSesiKeys = rekapHariArr.flatMap(k=>k.jam.filter(j=>j.adaSesi && !j.masihAktif).map(j=>j.tglKey));
 
   tbody.innerHTML = rows.map(([idpps,r],i)=>{
     // Bangun sel per hari (tiap hari = 3 sel J1 J2 J3)
@@ -1625,6 +1659,10 @@ function renderRekapRows(filter=''){
           return `<td class="rk-td-jam kosong" title="${k.hijri_label} Jam ${j.jamKe}: tidak ada sesi">·</td>`;
         }
         const st = r.tgl[j.tglKey];
+        // Sesi masih aktif & belum ada data → tampilkan "?" bukan Alpha
+        if(!st && j.masihAktif){
+          return `<td class="rk-td-jam" style="background:#fff8e1;color:#f57f17" title="${k.hijri_label} Jam ${j.jamKe}: sesi sedang berlangsung">?</td>`;
+        }
         const ic={H:'✓',A:'✗',I:'I',S:'S'}[st]||'·';
         const cls={H:'H',A:'A',I:'I',S:'S'}[st]||'kosong';
         return `<td class="rk-td-jam ${cls}" title="${k.hijri_label} Jam ${j.jamKe}: ${st||'—'}" style="cursor:pointer" onclick="editRekapStatus('${r.idpps}','${j.tglKey}','${st||'A'}',this)">${ic}</td>`;
